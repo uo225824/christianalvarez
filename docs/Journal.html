@@ -314,8 +314,11 @@ library(audio)
 library(fda.usc)
 library(stats)
 
-
+#Loading the data audio of the spoken numbers
 s10&lt;-load.wave(where = &quot;spoken/datos/0_jackson_0.wav&quot;)
+
+#We make a fast discrete fourier transform 
+
 s10t&lt;-fft(s10)
 s10t&lt;-abs(s10t)
 
