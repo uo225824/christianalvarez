@@ -11,7 +11,7 @@
 
 
 
-<title>Journal</title>
+<title>Voice to image with functional regression</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -299,7 +299,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Journal</h1>
+<h1 class="title toc-ignore">Voice to image with functional regression</h1>
 
 </div>
 
@@ -308,8 +308,19 @@ div.tocify {
 <p>This is an .Rmd file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a # in front of your text, it will create a top level-header.</p>
 <div id="my-first-post" class="section level1">
 <h1>My first post</h1>
-<p>2018 | 7 | 23 Last compiled: 2020-09-28</p>
-<p>Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left.</p>
+<p>2020 | 07 | 23 Last compiled: 2020-09-28</p>
+<pre class="r"><code>library(seawaveQ)
+library(audio)
+library(fda.usc)
+library(stats)
+
+
+s10&lt;-load.wave(where = &quot;spoken/datos/0_jackson_0.wav&quot;)
+s10t&lt;-fft(s10)
+s10t&lt;-abs(s10t)
+
+plot(s10t)</code></pre>
+<p><img src="Journal_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <div id="second-level-header" class="section level2">
 <h2>Second level header</h2>
 <p>You can add more headers by adding more hashtags. These won’t be put into the table of contents</p>
@@ -330,7 +341,7 @@ div.tocify {
 <p>So, let’s say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation =1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:</p>
 <pre class="r"><code>samples &lt;- rnorm(100, mean=0, sd=1)
 hist(samples)</code></pre>
-<p><img src="Journal_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="Journal_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <p>When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag), from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You learn all of these things and more can be customized in each R code block.</p>
 </div>
 <div id="the-big-idea" class="section level1">

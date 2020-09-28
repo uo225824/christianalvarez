@@ -1,5 +1,5 @@
 ---
-title: "Journal"
+title: "Voice to image with functional regression"
 output:
   html_document:
     toc: true
@@ -21,9 +21,22 @@ This is an .Rmd file. It is plain text with special features. Any time you write
 
 # My first post
 
-2018 | 7 | 23 Last compiled: `r Sys.Date()`
+2020 | 07 | 23 Last compiled: `r Sys.Date()`
 
-Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left. 
+```{r}
+library(seawaveQ)
+library(audio)
+library(fda.usc)
+library(stats)
+
+
+s10<-load.wave(where = "spoken/datos/0_jackson_0.wav")
+s10t<-fft(s10)
+s10t<-abs(s10t)
+
+plot(s10t)
+
+```
 
 ## Second level header
 
