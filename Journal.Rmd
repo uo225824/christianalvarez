@@ -39,6 +39,8 @@ s10t<-abs(s10t)
 
 plot(s10t)
 
+head(s10t)
+
 ```
 
 ## Second level header
