@@ -30,16 +30,22 @@ library(fda.usc)
 library(stats)
 
 #Loading the data audio of the spoken numbers
-s10<-load.wave(where = "spoken/datos/0_jackson_0.wav")
+s0<-load.wave(where = "spoken/datos/0_jackson_0.wav")
+s1<-load.wave(where = "spoken/datos/1_jackson_0.wav")
 
 #We make a fast discrete fourier transform 
 
-s10t<-fft(s10)
-s10t<-abs(s10t)
+s0t<-fft(s0)
+s0t<-abs(s0t)
+s1t<-fft(s1)
+s1t<-abs(s1t)
 
-plot(s10t)
+sc<-cbind(s0,s1)
+sct<-cbind(s0t,s1t)
 
-head(s10t)
+par(mfrow=c(1,2))
+plot(fdata(t(sc)))
+plot(fdata(t(sct)))
 
 ```
 

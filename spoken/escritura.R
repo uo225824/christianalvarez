@@ -3,7 +3,7 @@ abs(t(fft(M)))
 #Libreria principal del analisis de datos funcionales.
 
 library(fda.usc)
-y <-t(train[indices,2:ncol(train)])
+y <-t(train[indice,2:ncol(train)])
 x<-abs(t(fft(M)))
 
 #Base optima
@@ -14,17 +14,19 @@ opt.bsX<-optim.basis(fdata(t(x)),numbasis = seq(4,30,2),type.basis = "bspline")
 nbx<-opt.bsX$numbasis.opt
 nby<-opt.bsY$numbasis.opt
 
-nbx<-21
+nbx<-290
 nby<-199
 
 #Creamos las bases y formamos nuestro set de datos funcionales.  
-basisx <- create.fourier.basis(c(0,6273),nbasis = nbx )
+basisx <- create.fourier.basis(c(0,7038),nbasis = nbx )
 basisy<-  create.fourier.basis(c(0,784),nbasis = nby )
-datosf<-Data2fd((x),seq(0,6273,length=6273),basisobj = basisx)
+datosf<-Data2fd((x),seq(0,7038,length=7038),basisobj = basisx)
 datosfN<-Data2fd((y),seq(0,784,length=784),basisobj = basisy)
 
 plot(datosfN)
 plot(datosf)
+plot(datosf[49:51])
+
 #Inicializacion de los parametros de penalización
 lambdas<-1
 lambdat<-1
@@ -58,7 +60,7 @@ pr<-eval.fd(prf,seq(0,1,length=ttiempo))
 
 #Representación Grafica
 
-A1<-matrix(as.double(pr[,1]),nrow = 28,byrow = T)
+A1<-matrix(as.double(pr[,6]),nrow = 28,byrow = T)
 A1<-matrix(as.double(train[24795,2:785]),nrow = 28,byrow = T)
 
 rotate <- function(x) t(apply(x, 2, rev))
