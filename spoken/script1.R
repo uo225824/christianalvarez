@@ -12,7 +12,7 @@ s10t<-abs(s10t)
 temp = list.files(pattern="*wav")
 myfiles = lapply(temp, load.wave)
 
-M<-matrix(data=0,nrow = 50,ncol = 7038)
+M<-matrix(data=0,nrow = 50,ncol = 6273)
 for (i in 1:50) {
  
   M[i,1:length(myfiles[[i]])]<-myfiles[[i]]
@@ -29,7 +29,8 @@ for (i in 1:9) {
   jj<-which(train$label==i)
   indice<-c(indice,sample(jj,50))
 }
-ii
+ii<-which(train$label==0)
+index<-sample(ii,50)
 jj<-which(train$label==1)
 indice<-sample(ii,50)
 indice1<-sample(jj,50)

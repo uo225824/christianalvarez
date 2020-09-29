@@ -103,9 +103,9 @@ for (i in 1:50) {
 #Our functional covariable
 
 x<-abs(t(fft(M)))
-nbx<-291
+nbx<-50
 basisx <- create.fourier.basis(c(0,6273),nbasis = nbx )
-SFD<-Data2fd((x),seq(0,7038,length=7038),basisobj = basisx)
+SFD<-Data2fd((x),seq(0,6273,length=6273),basisobj = basisx)
 
 
 
@@ -132,8 +132,10 @@ head(train)
 We only will work with the number 0. Since we just have 50 voice note  of the number 0, we will only take 50 random 0 from the dataset.
 
 ```{r}
+set.seed(12345)
 ii<-which(train$label==0)
 index<-sample(ii,50)
+ll<-sample(1:50,10)
 
 #Our functional response model 
 
@@ -144,6 +146,54 @@ DFD<-Data2fd((y),seq(0,784,length=784),basisobj = basisy)
 
 
 
+```
+
+##Functional reggression with functional response.
+
+The model we will use will be the one proposed by Ramsay and Silverman. It is a penalized functional regression. This penalty is necessary to avoid the problem of sparsity, because the estimation of the model depends on determining the inverter of a matrix whose dimension is the number of elements of the base chosen. The greater this number of elements, the more difficult it will be to find an inverse of this matrix. The model has the form:
+
+$$Y_{i}(t)=\alpha(t)+\int \beta(t,s)X_{i}(s)ds+\epsilon_{i}(t)$$
+
+The model estimate is given as:
+
+$$vec(\mathbf{\widehat{B}})=[J_{\theta \theta}\otimes(\mathbf{X}'\mathbf{X})+\lambda_{s}J_{\theta \theta}\otimes\mathbf{R}+\lambda_{t}\mathbf{Q}\otimes J_{\eta \eta}]^{-1}(J_{\phi \theta}\otimes \mathbf{X}')vec(\mathbf{C})$$
+where 
+
+$$[J_{\theta \theta}\otimes (\mathbf{X}' \mathbf{X} )]vec(\mathbf{B} )=vec\left(\mathbf{X}'  \int Y(t)\theta ' (t) dt \right) $$
+
+
+Now we are going to implement all this ideas
+
+```{r}
+lambdas<-1
+lambdat<-1
+
+tini <- proc.time()
+res.fr = fregre.basis.fr(datosf[-ll],datosfN[-ll],basisx,basisy,lambda.s = lambdas,lambda.t = lambdat,Lfdobj.s = 1,Lfdobj.t = 1)
+proc.time() - tini
+prf<-predict(res.fr,datosf[ll],basisobj = basisy)
+pr<-eval.fd(prf,seq(0,784,length=784))
+
+```
+
+To determine if our model is capable of creating handwritten number images, we will only draw the output of our model using the test set.
+
+
+```{r}
+
+A1<-matrix(as.double(pr[,1]),nrow = 28,byrow = T)
+rotate <- function(x) t(apply(x, 2, rev))
+image(rotate(A1))
+
+
+#Making the pixels that have values less than 30 be 0.
+jj<-which(pr[,1]<50)
+pr[jj,1]=0
+
+
+A1<-matrix(as.double(pr[,1]),nrow = 28,byrow = T)
+rotate <- function(x) t(apply(x, 2, rev))
+image(rotate(A1))
 ```
 
 
