@@ -12,9 +12,11 @@ s10t<-abs(s10t)
 temp = list.files(pattern="*wav")
 myfiles = lapply(temp, load.wave)
 
-M<-matrix(data=0,nrow = 100,ncol = 6273)
-for (i in 1:100) {
+M<-matrix(data=0,nrow = 500,ncol = 7038)
+for (i in 1:500) {
+ 
   M[i,1:length(myfiles[[i]])]<-myfiles[[i]]
+    
 }
 
 datosf<-fdata(fft(abs(as.matrix(M))))
@@ -22,7 +24,12 @@ datosf<-fdata(fft(abs(as.matrix(M))))
 train<-read.csv(file = "datos/train.csv")
 head(train)
 
-ii<-which(train$label==0)
+indice<-sample(ii,50)
+for (i in 1:9) {
+  jj<-which(train$label==i)
+  indice<-c(indice,sample(jj,50))
+}
+ii
 jj<-which(train$label==1)
 indice<-sample(ii,50)
 indice1<-sample(jj,50)

@@ -308,25 +308,30 @@ div.tocify {
 <p>This is an .Rmd file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a # in front of your text, it will create a top level-header.</p>
 <div id="my-first-post" class="section level1">
 <h1>My first post</h1>
-<p>2020 | 07 | 23 Last compiled: 2020-09-28</p>
+<p>2020 | 07 | 23 Last compiled: 2020-09-29</p>
 <pre class="r"><code>library(seawaveQ)
 library(audio)
 library(fda.usc)
 library(stats)
 
 #Loading the data audio of the spoken numbers
-s10&lt;-load.wave(where = &quot;spoken/datos/0_jackson_0.wav&quot;)
+s0&lt;-load.wave(where = &quot;spoken/datos/0_jackson_0.wav&quot;)
+s1&lt;-load.wave(where = &quot;spoken/datos/1_jackson_0.wav&quot;)
 
 #We make a fast discrete fourier transform 
 
-s10t&lt;-fft(s10)
-s10t&lt;-abs(s10t)
+s0t&lt;-fft(s0)
+s0t&lt;-abs(s0t)
+s1t&lt;-fft(s1)
+s1t&lt;-abs(s1t)
 
-plot(s10t)</code></pre>
+sc&lt;-cbind(s0,s1)
+sct&lt;-cbind(s0t,s1t)
+
+par(mfrow=c(1,2))
+plot(fdata(t(sc)))
+plot(fdata(t(sct)))</code></pre>
 <p><img src="Journal_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
-<pre class="r"><code>head(s10t)</code></pre>
-<pre><code>## sample rate: 8000Hz, mono, 16-bits
-## [1] 0.04435747 0.04997177 0.06215527 0.04503364 0.02615314 0.04071233</code></pre>
 <div id="second-level-header" class="section level2">
 <h2>Second level header</h2>
 <p>You can add more headers by adding more hashtags. These won’t be put into the table of contents</p>
@@ -338,7 +343,7 @@ plot(s10t)</code></pre>
 </div>
 <div id="my-second-post-note-the-order" class="section level1">
 <h1>My second post (note the order)</h1>
-<p>2018 | 7 | 23 Last compiled: 2020-09-28</p>
+<p>2018 | 7 | 23 Last compiled: 2020-09-29</p>
 <p>I’m writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom</p>
 </div>
 <div id="adding-r-stuff" class="section level1">
