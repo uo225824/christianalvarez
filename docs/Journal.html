@@ -304,8 +304,6 @@ div.tocify {
 </div>
 
 
-<p>IMPORTANT: You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.</p>
-<p>This is an .Rmd file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a # in front of your text, it will create a top level-header.</p>
 <div id="voice-to-image-with-functional-regression" class="section level1">
 <h1>Voice to image with functional regression</h1>
 <p>2020 | 07 | 23 Last compiled: 2020-09-29</p>
@@ -313,18 +311,49 @@ div.tocify {
 <div id="the-voice-data." class="section level2">
 <h2>The voice data.</h2>
 <p>The first step in our analysis will be to study the behavior of our audio notes. We will represent two voice note using functional data.</p>
-<pre class="r"><code>library(seawaveQ)
-library(audio)
-library(fda.usc)
-library(stats)
-
-#Loading the data audio of the spoken numbers
+<pre class="r"><code>library(seawaveQ)</code></pre>
+<pre><code>## Loading required package: survival</code></pre>
+<pre><code>## Loading required package: NADA</code></pre>
+<pre><code>## 
+## Attaching package: &#39;NADA&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     cor</code></pre>
+<pre><code>## Loading required package: lubridate</code></pre>
+<pre><code>## 
+## Attaching package: &#39;lubridate&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     date</code></pre>
+<pre class="r"><code>library(audio)
+library(fda.usc)</code></pre>
+<pre><code>## Loading required package: fda</code></pre>
+<pre><code>## Loading required package: splines</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;fda&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     matplot</code></pre>
+<pre><code>## Loading required package: MASS</code></pre>
+<pre><code>## Loading required package: mgcv</code></pre>
+<pre><code>## Loading required package: nlme</code></pre>
+<pre><code>## This is mgcv 1.8-26. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.</code></pre>
+<pre><code>## -----------------------------------------------------------------
+##  Functional Data Analysis and Utilities for Statistical Computing
+##  fda.usc version 2.0.0 (built on 2019-11-11) is now loaded
+##  fda.usc is running sequentially usign foreach package
+##  Please, execute ops.fda.usc() once to run in local parallel mode
+## -----------------------------------------------------------------</code></pre>
+<pre class="r"><code>library(stats)</code></pre>
+<pre class="r"><code>#Loading the data audio of the spoken numbers
 s0&lt;-load.wave(where = &quot;spoken/datos/0_jackson_0.wav&quot;)
 s1&lt;-load.wave(where = &quot;spoken/datos/0_jackson_1.wav&quot;)
 
-sc&lt;-cbind(s0,s1)
-
-#Making the functional data
+sc&lt;-cbind(s0,s1)</code></pre>
+<pre><code>## Warning in cbind(s0, s1): number of rows of result is not a multiple of
+## vector length (arg 2)</code></pre>
+<pre class="r"><code>#Making the functional data
 
 nbx&lt;-291
 basisx &lt;- create.fourier.basis(c(0,5148),nbasis = nbx )
@@ -338,7 +367,7 @@ plot(fds,main=&quot;Functional data approach&quot;,xlab=&quot;Time&quot;,
 <pre class="r"><code>plot.ts(sc[,1],main=&quot;Real data&quot;,xlab=&quot;Time&quot;,
         ylab=&quot;Amplitude&quot;)
 lines(sc[,2], col = &quot;red&quot;)</code></pre>
-<p><img src="Journal_files/figure-html/unnamed-chunk-1-1.png" width="672" /> We have used a 291 elements of the Fourier basis. It is a very large number of elements, and the approximation isn’t as good as we expect. The problem here is that our data is very rough. We will make a discrete Fourier transform of the data (we want to work in frequency domain) to make easier the approximation. We will also work in absolute value for ease.</p>
+<p><img src="Journal_files/figure-html/unnamed-chunk-2-1.png" width="672" /> We have used a 291 elements of the Fourier basis. It is a very large number of elements, and the approximation isn’t as good as we expect. The problem here is that our data is very rough. We will make a discrete Fourier transform of the data (we want to work in frequency domain) to make easier the approximation. We will also work in absolute value for ease.</p>
 <pre class="r"><code>#We make a fast discrete fourier transform 
 s0t&lt;-fft(s0)
 s0t&lt;-abs(s0t)
@@ -362,8 +391,26 @@ plot(fdst,main=&quot;Functional data approach&quot;,xlab=&quot;Time&quot;,
 <pre class="r"><code>plot.ts(sct[,1],main=&quot;Real data&quot;,xlab=&quot;Time&quot;,
         ylab=&quot;Amplitude&quot;)
 lines(sct[,2], col = &quot;red&quot;)</code></pre>
-<p><img src="Journal_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="Journal_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>As we can see, the approximation is much better than the first attempt.</p>
+<pre class="r"><code>temp = list.files(pattern=&quot;*wav&quot;)
+myfiles = lapply(temp, load.wave)
+
+M&lt;-matrix(data=0,nrow = 50,ncol = 6273)
+for (i in 1:50) {
+ 
+  M[i,1:length(myfiles[[i]])]&lt;-myfiles[[i]]
+    
+}
+
+#Our functional covariable
+
+x&lt;-abs(t(fft(M)))
+nbx&lt;-51
+basisx &lt;- create.fourier.basis(c(0,6273),nbasis = nbx )
+SFD&lt;-Data2fd((x),seq(0,6273,length=6273),basisobj = basisx)</code></pre>
+<pre><code>## Swapping &#39;y&#39; and &#39;argvals&#39;, because &#39;y&#39; is  simpler,
+##   and &#39;argvals&#39; should be;  now  dim(argvals) =  6273 ;  dim(y) =  6273 x 50</code></pre>
 </div>
 <div id="the-mnist-dataset." class="section level2">
 <h2>The MNIST dataset.</h2>
@@ -372,7 +419,53 @@ lines(sct[,2], col = &quot;red&quot;)</code></pre>
 <img src="images/mnist.png" />
 
 </div>
+<p>The dataset has 785 colums. The firts one indicates the value of the handwrite number and the next 784 the value of the pixels. This pixel form a 28x28 image.</p>
+<pre class="r"><code>train&lt;-read.csv(file = &quot;spoken/datos/train.csv&quot;)</code></pre>
 <p>We only will work with the number 0. Since we just have 50 voice note of the number 0, we will only take 50 random 0 from the dataset.</p>
+<pre class="r"><code>set.seed(12345)
+ii&lt;-which(train$label==0)
+index&lt;-sample(ii,50)
+ll&lt;-sample(1:50,10)
+
+#Our functional response model 
+
+y &lt;-t(train[index,2:ncol(train)])
+nby&lt;-181
+basisy&lt;-  create.fourier.basis(c(0,784),nbasis = nby )
+DFD&lt;-Data2fd((y),seq(0,784,length=784),basisobj = basisy)</code></pre>
+<pre><code>## Swapping &#39;y&#39; and &#39;argvals&#39;, because &#39;y&#39; is  simpler,
+##   and &#39;argvals&#39; should be;  now  dim(argvals) =  784 ;  dim(y) =  784 x 50</code></pre>
+</div>
+<div id="functional-reggression-with-functional-response." class="section level2">
+<h2>Functional reggression with functional response.</h2>
+<p>The model we will use will be the one proposed by Ramsay and Silverman. It is a penalized functional regression. This penalty is necessary to avoid the problem of sparsity, because the estimation of the model depends on determining the inverter of a matrix whose dimension is the number of elements of the base chosen. The greater this number of elements, the more difficult it will be to find an inverse of this matrix. The model has the form:</p>
+<p><span class="math display">\[Y_{i}(t)=\alpha(t)+\int \beta(t,s)X_{i}(s)ds+\epsilon_{i}(t)\]</span></p>
+<p>The model estimate is given as:</p>
+<p><span class="math display">\[vec(\mathbf{\widehat{B}})=[J_{\theta \theta}\otimes(\mathbf{X}&#39;\mathbf{X})+\lambda_{s}J_{\theta \theta}\otimes\mathbf{R}+\lambda_{t}\mathbf{Q}\otimes J_{\eta \eta}]^{-1}(J_{\phi \theta}\otimes \mathbf{X}&#39;)vec(\mathbf{C})\]</span> where</p>
+<p><span class="math display">\[[J_{\theta \theta}\otimes (\mathbf{X}&#39; \mathbf{X} )]vec(\mathbf{B} )=vec\left(\mathbf{X}&#39;  \int Y(t)\theta &#39; (t) dt \right) \]</span></p>
+<p>Now we are going to implement all this ideas</p>
+<pre class="r"><code>lambdas&lt;-1
+lambdat&lt;-1
+
+tini &lt;- proc.time()
+res.fr = fregre.basis.fr(datosf[-ll],datosfN[-ll],basisx,basisy,lambda.s = lambdas,lambda.t = lambdat,Lfdobj.s = 1,Lfdobj.t = 1)
+proc.time() - tini</code></pre>
+<pre><code>##    user  system elapsed 
+##  283.14    2.25  285.42</code></pre>
+<pre class="r"><code>prf&lt;-predict(res.fr,datosf[ll],basisobj = basisy)
+pr&lt;-eval.fd(prf,seq(0,784,length=784))</code></pre>
+<p>To determine if our model is capable of creating handwritten number images, we will only draw the output of our model using the test set.</p>
+<pre class="r"><code>A1&lt;-matrix(as.double(pr[,4]),nrow = 28,byrow = T)
+rotate &lt;- function(x) t(apply(x, 2, rev))
+image(rotate(A1))</code></pre>
+<p><img src="Journal_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>#Making the pixels that have values less than 30 be 0.
+jj&lt;-which(pr[,4]&lt;50)
+pr[jj,4]=0
+A1&lt;-matrix(as.double(pr[,4]),nrow = 28,byrow = T)
+image(rotate(A1))</code></pre>
+<p><img src="Journal_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<p>The results are not entirely good, but we can clearly see that it is a 0. On the other hand, it should be noted that we are only working with a very low number of base elements. As we increase the number of elements, the resolution of the image also increases.</p>
 <p>I wrote an <a href="https://crumplab.github.io/programmingforpsych/">introductory programming book that introduces R</a>, and gives some <a href="https://crumplab.github.io/programmingforpsych/programming-challenges-i-learning-the-fundamentals.html">concrete problems for you to solve</a>.</p>
 </div>
 </div>

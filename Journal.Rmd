@@ -10,14 +10,7 @@ output:
     #code_folding: hide
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
-```
 
-IMPORTANT: You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.
-
-
-This is an .Rmd file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
 
 # Voice to image with functional regression
 
@@ -29,12 +22,14 @@ In this section our focus will be in find a way to implement the functional regr
 
 The first step in our analysis will be to study the behavior of our audio notes. We will represent two voice note using functional data.
 
-```{r}
+```{r warning=FALSE}
 library(seawaveQ)
 library(audio)
 library(fda.usc)
 library(stats)
+```
 
+```{r}
 #Loading the data audio of the spoken numbers
 s0<-load.wave(where = "spoken/datos/0_jackson_0.wav")
 s1<-load.wave(where = "spoken/datos/0_jackson_1.wav")
@@ -57,7 +52,7 @@ lines(sc[,2], col = "red")
 ```
 We have used a 291 elements of the Fourier basis. It is a very large number of elements, and the approximation isn't as good as we expect. The problem here is that our data is very rough. We will make a discrete Fourier transform of the data (we want to work in frequency domain) to make easier the approximation. We will also work in absolute value for ease.
 
-```{r}
+```{r warning=FALSE}
 #We make a fast discrete fourier transform 
 s0t<-fft(s0)
 s0t<-abs(s0t)
@@ -80,15 +75,12 @@ plot.ts(sct[,1],main="Real data",xlab="Time",
         ylab="Amplitude")
 lines(sct[,2], col = "red")
 
-
-
-
 ```
 
 As we can see, the approximation is much better than the first attempt.
 
 
-```{r}
+```{r warning=FALSE}
 
 temp = list.files(pattern="*wav")
 myfiles = lapply(temp, load.wave)
@@ -103,11 +95,9 @@ for (i in 1:50) {
 #Our functional covariable
 
 x<-abs(t(fft(M)))
-nbx<-50
+nbx<-51
 basisx <- create.fourier.basis(c(0,6273),nbasis = nbx )
 SFD<-Data2fd((x),seq(0,6273,length=6273),basisobj = basisx)
-
-
 
 
 ```
@@ -123,15 +113,13 @@ The following image shows a set of handwritten  numbers from the MNIST data set.
 The dataset has 785 colums. The firts one indicates the value of the handwrite number and the next 784 the value of the pixels. This pixel form a 28x28 image.
 
 ```{r}
-train<-read.csv(file = "datos/train.csv")
-head(train)
-
+train<-read.csv(file = "spoken/datos/train.csv")
 
 ```
 
 We only will work with the number 0. Since we just have 50 voice note  of the number 0, we will only take 50 random 0 from the dataset.
 
-```{r}
+```{r warning=FALSE}
 set.seed(12345)
 ii<-which(train$label==0)
 index<-sample(ii,50)
@@ -140,7 +128,7 @@ ll<-sample(1:50,10)
 #Our functional response model 
 
 y <-t(train[index,2:ncol(train)])
-nby<-199
+nby<-181
 basisy<-  create.fourier.basis(c(0,784),nbasis = nby )
 DFD<-Data2fd((y),seq(0,784,length=784),basisobj = basisy)
 
@@ -164,7 +152,7 @@ $$[J_{\theta \theta}\otimes (\mathbf{X}' \mathbf{X} )]vec(\mathbf{B} )=vec\left(
 
 Now we are going to implement all this ideas
 
-```{r}
+```{r warning=FALSE}
 lambdas<-1
 lambdat<-1
 
@@ -179,26 +167,23 @@ pr<-eval.fd(prf,seq(0,784,length=784))
 To determine if our model is capable of creating handwritten number images, we will only draw the output of our model using the test set.
 
 
-```{r}
+```{r warning=FALSE}
 
-A1<-matrix(as.double(pr[,1]),nrow = 28,byrow = T)
+A1<-matrix(as.double(pr[,4]),nrow = 28,byrow = T)
 rotate <- function(x) t(apply(x, 2, rev))
 image(rotate(A1))
 
 
 #Making the pixels that have values less than 30 be 0.
-jj<-which(pr[,1]<50)
-pr[jj,1]=0
-
-
-A1<-matrix(as.double(pr[,1]),nrow = 28,byrow = T)
-rotate <- function(x) t(apply(x, 2, rev))
+jj<-which(pr[,4]<50)
+pr[jj,4]=0
+A1<-matrix(as.double(pr[,4]),nrow = 28,byrow = T)
 image(rotate(A1))
 ```
 
 
 
-
+The results are not entirely good, but we can clearly see that it is a 0. On the other hand, it should be noted that we are only working with a very low number of base elements. As we increase the number of elements, the resolution of the image also increases.
 
 
 
