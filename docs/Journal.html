@@ -282,7 +282,7 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="Journal.html">Journal</a>
+  <a href="Journal.html">Aplication of functional data to MNIST</a>
 </li>
 <li>
   <a href="Links.html">Links</a>
@@ -306,9 +306,13 @@ div.tocify {
 
 <p>IMPORTANT: You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.</p>
 <p>This is an .Rmd file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a # in front of your text, it will create a top level-header.</p>
-<div id="my-first-post" class="section level1">
-<h1>My first post</h1>
+<div id="voice-to-image-with-functional-regression" class="section level1">
+<h1>Voice to image with functional regression</h1>
 <p>2020 | 07 | 23 Last compiled: 2020-09-29</p>
+<p>In this section our focus will be in find a way to implement the functional regression with functional response to the MNIST problem. Our goal will be to a make a model where the response is a handwritte number and the covariable a voice note of the number. Due to the computational cost of this model, we will focus on a simple case, using only the number zero.</p>
+<div id="the-voice-data." class="section level2">
+<h2>The voice data.</h2>
+<p>The first step in our analysis will be to study the behavior of our audio notes. We will represent two voice note using functional data.</p>
 <pre class="r"><code>library(seawaveQ)
 library(audio)
 library(fda.usc)
@@ -316,128 +320,61 @@ library(stats)
 
 #Loading the data audio of the spoken numbers
 s0&lt;-load.wave(where = &quot;spoken/datos/0_jackson_0.wav&quot;)
-s1&lt;-load.wave(where = &quot;spoken/datos/1_jackson_0.wav&quot;)
+s1&lt;-load.wave(where = &quot;spoken/datos/0_jackson_1.wav&quot;)
 
-#We make a fast discrete fourier transform 
+sc&lt;-cbind(s0,s1)
 
+#Making the functional data
+
+nbx&lt;-291
+basisx &lt;- create.fourier.basis(c(0,5148),nbasis = nbx )
+fds&lt;-Data2fd((sc),seq(0,5148,length=5148),basisobj = basisx)</code></pre>
+<pre><code>## Swapping &#39;y&#39; and &#39;argvals&#39;, because &#39;y&#39; is  simpler,
+##   and &#39;argvals&#39; should be;  now  dim(argvals) =  5148 ;  dim(y) =  5148 x 2</code></pre>
+<pre class="r"><code>par(mfrow=c(1,2))
+plot(fds,main=&quot;Functional data approach&quot;,xlab=&quot;Time&quot;,
+        ylab=&quot;Amplitude&quot;)</code></pre>
+<pre><code>## [1] &quot;done&quot;</code></pre>
+<pre class="r"><code>plot.ts(sc[,1],main=&quot;Real data&quot;,xlab=&quot;Time&quot;,
+        ylab=&quot;Amplitude&quot;)
+lines(sc[,2], col = &quot;red&quot;)</code></pre>
+<p><img src="Journal_files/figure-html/unnamed-chunk-1-1.png" width="672" /> We have used a 291 elements of the Fourier basis. It is a very large number of elements, and the approximation isn’t as good as we expect. The problem here is that our data is very rough. We will make a discrete Fourier transform of the data (we want to work in frequency domain) to make easier the approximation. We will also work in absolute value for ease.</p>
+<pre class="r"><code>#We make a fast discrete fourier transform 
 s0t&lt;-fft(s0)
 s0t&lt;-abs(s0t)
 s1t&lt;-fft(s1)
 s1t&lt;-abs(s1t)
 
-sc&lt;-cbind(s0,s1)
+
 sct&lt;-cbind(s0t,s1t)
 
-par(mfrow=c(1,2))
-plot(fdata(t(sc)))
-plot(fdata(t(sct)))</code></pre>
-<p><img src="Journal_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
-<div id="second-level-header" class="section level2">
-<h2>Second level header</h2>
-<p>You can add more headers by adding more hashtags. These won’t be put into the table of contents</p>
-<div id="third-level-header" class="section level3">
-<h3>third level header</h3>
-<p>Here’s an even lower level header</p>
-</div>
-</div>
-</div>
-<div id="my-second-post-note-the-order" class="section level1">
-<h1>My second post (note the order)</h1>
-<p>2018 | 7 | 23 Last compiled: 2020-09-29</p>
-<p>I’m writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom</p>
-</div>
-<div id="adding-r-stuff" class="section level1">
-<h1>Adding R stuff</h1>
-<p>So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the sam place.</p>
-<p>So, let’s say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation =1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:</p>
-<pre class="r"><code>samples &lt;- rnorm(100, mean=0, sd=1)
-hist(samples)</code></pre>
+#Making the functional data
+
+nbx&lt;-291
+basisx &lt;- create.fourier.basis(c(0,5148),nbasis = nbx )
+fdst&lt;-Data2fd((sct),seq(0,5148,length=5148),basisobj = basisx)</code></pre>
+<pre><code>## Swapping &#39;y&#39; and &#39;argvals&#39;, because &#39;y&#39; is  simpler,
+##   and &#39;argvals&#39; should be;  now  dim(argvals) =  5148 ;  dim(y) =  5148 x 2</code></pre>
+<pre class="r"><code>par(mfrow=c(1,2))
+plot(fdst,main=&quot;Functional data approach&quot;,xlab=&quot;Time&quot;,
+        ylab=&quot;Amplitude&quot;)</code></pre>
+<pre><code>## [1] &quot;done&quot;</code></pre>
+<pre class="r"><code>plot.ts(sct[,1],main=&quot;Real data&quot;,xlab=&quot;Time&quot;,
+        ylab=&quot;Amplitude&quot;)
+lines(sct[,2], col = &quot;red&quot;)</code></pre>
 <p><img src="Journal_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<p>When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag), from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You learn all of these things and more can be customized in each R code block.</p>
+<p>As we can see, the approximation is much better than the first attempt.</p>
 </div>
-<div id="the-big-idea" class="section level1">
-<h1>The big idea</h1>
-<p>Use this lab journal to record what you do in R. This way I will be able to see what you are doing and help you along the way. You will also be creating a repository of all the things you do. You can make posts about everything. Learning specific things in R (project unrelated), and doing things for the project that we will discuss at the beginning of the Fall semester. You can get started now by fiddling around with googling things, and trying stuff out in R. I’ve placed some helpful starting links in the links page on this website</p>
+<div id="the-mnist-dataset." class="section level2">
+<h2>The MNIST dataset.</h2>
+<p>The following image shows a set of handwritten numbers from the MNIST data set.</p>
+<div class="figure">
+<img src="images/mnist.png" />
+
 </div>
-<div id="what-can-you-do-right-now-by-yourself" class="section level1">
-<h1>What can you do right now by yourself?</h1>
-<p>It’s hard to learn programming when you don’t have specific problems that you are trying to solve. Everything just seems abstract.</p>
+<p>We only will work with the number 0. Since we just have 50 voice note of the number 0, we will only take 50 random 0 from the dataset.</p>
 <p>I wrote an <a href="https://crumplab.github.io/programmingforpsych/">introductory programming book that introduces R</a>, and gives some <a href="https://crumplab.github.io/programmingforpsych/programming-challenges-i-learning-the-fundamentals.html">concrete problems for you to solve</a>.</p>
-<p>To get the hang of journaling and solving the problems to learn programming, my suggestion is that you use this .Rmd file to solve the problems. It would look like this:</p>
 </div>
-<div id="problem-1" class="section level1">
-<h1>Problem 1</h1>
-<p>Do simple math with numbers, addition, subtraction, multiplication, division</p>
-<pre class="r"><code>1+2</code></pre>
-<pre><code>## [1] 3</code></pre>
-<pre class="r"><code>2*5</code></pre>
-<pre><code>## [1] 10</code></pre>
-<pre class="r"><code>5/3</code></pre>
-<pre><code>## [1] 1.666667</code></pre>
-<pre class="r"><code>(1+6+4)/5</code></pre>
-<pre><code>## [1] 2.2</code></pre>
-</div>
-<div id="problem-2" class="section level1">
-<h1>Problem 2</h1>
-<p>Put numbers into variables, do simple math on the variables</p>
-<pre class="r"><code>a&lt;-1
-b&lt;-2
-a+b</code></pre>
-<pre><code>## [1] 3</code></pre>
-<pre class="r"><code>d&lt;-c(1,2,3)
-e&lt;-c(5,6,7)
-d+e</code></pre>
-<pre><code>## [1]  6  8 10</code></pre>
-<pre class="r"><code>d*e</code></pre>
-<pre><code>## [1]  5 12 21</code></pre>
-<pre class="r"><code>d/e</code></pre>
-<pre><code>## [1] 0.2000000 0.3333333 0.4285714</code></pre>
-</div>
-<div id="problem-3" class="section level1">
-<h1>Problem 3</h1>
-<p>Write code that will place the numbers 1 to 100 separately into a variable using for loop. Then, again using the seq function.</p>
-<pre class="r"><code># for loop solution
-# i becomes the number 1 to 100 at each step of the loop
-
-
-a &lt;- length(100) # make empty variable, set length to 100
-for (i in 1:100){
-  a[i] &lt;-i #assigns the number in i, to the ith index of a
-}
-
-print(a)</code></pre>
-<pre><code>##   [1]   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
-##  [18]  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34
-##  [35]  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51
-##  [52]  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68
-##  [69]  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85
-##  [86]  86  87  88  89  90  91  92  93  94  95  96  97  98  99 100</code></pre>
-<pre class="r"><code># for loop solution #2
-
-a&lt;-c() #create empty variable using combine command
-for (i in 1:100){
-  a&lt;-c(a,i) # keeps combining a with itself and the new number in i
-}
-print(a)</code></pre>
-<pre><code>##   [1]   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
-##  [18]  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34
-##  [35]  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51
-##  [52]  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68
-##  [69]  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85
-##  [86]  86  87  88  89  90  91  92  93  94  95  96  97  98  99 100</code></pre>
-<pre class="r"><code># seq solution
-a &lt;- seq(1,100,1) # look up help for seq using ?seq() in console
-print(a)</code></pre>
-<pre><code>##   [1]   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
-##  [18]  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34
-##  [35]  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51
-##  [52]  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68
-##  [69]  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85
-##  [86]  86  87  88  89  90  91  92  93  94  95  96  97  98  99 100</code></pre>
-</div>
-<div id="replace-this-with-problem-4" class="section level1">
-<h1>Replace this with problem 4</h1>
-<p>And keep going. Try to solve the problems with different scripts that provide the same solution. Good luck, Happy coding.</p>
 </div>
 
 

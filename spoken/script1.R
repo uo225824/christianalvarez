@@ -12,8 +12,8 @@ s10t<-abs(s10t)
 temp = list.files(pattern="*wav")
 myfiles = lapply(temp, load.wave)
 
-M<-matrix(data=0,nrow = 500,ncol = 7038)
-for (i in 1:500) {
+M<-matrix(data=0,nrow = 50,ncol = 7038)
+for (i in 1:50) {
  
   M[i,1:length(myfiles[[i]])]<-myfiles[[i]]
     

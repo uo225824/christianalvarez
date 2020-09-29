@@ -19,9 +19,15 @@ IMPORTANT: You can delete everything in here and start fresh. You might want to 
 
 This is an .Rmd file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
 
-# My first post
+# Voice to image with functional regression
 
 2020 | 07 | 23 Last compiled: `r Sys.Date()`
+
+In this section our focus will be in find a way to implement the functional regression with functional response to the MNIST problem. Our goal will be to a make a model where the response is a handwritte number and the covariable a voice note of the number. Due to the computational cost of this model, we will focus on a simple case, using only the number zero.
+
+##The voice data.
+
+The first step in our analysis will be to study the behavior of our audio notes. We will represent two voice note using functional data.
 
 ```{r}
 library(seawaveQ)
@@ -31,122 +37,129 @@ library(stats)
 
 #Loading the data audio of the spoken numbers
 s0<-load.wave(where = "spoken/datos/0_jackson_0.wav")
-s1<-load.wave(where = "spoken/datos/1_jackson_0.wav")
+s1<-load.wave(where = "spoken/datos/0_jackson_1.wav")
 
+sc<-cbind(s0,s1)
+
+#Making the functional data
+
+nbx<-291
+basisx <- create.fourier.basis(c(0,5148),nbasis = nbx )
+fds<-Data2fd((sc),seq(0,5148,length=5148),basisobj = basisx)
+
+par(mfrow=c(1,2))
+plot(fds,main="Functional data approach",xlab="Time",
+        ylab="Amplitude")
+plot.ts(sc[,1],main="Real data",xlab="Time",
+        ylab="Amplitude")
+lines(sc[,2], col = "red")
+
+```
+We have used a 291 elements of the Fourier basis. It is a very large number of elements, and the approximation isn't as good as we expect. The problem here is that our data is very rough. We will make a discrete Fourier transform of the data (we want to work in frequency domain) to make easier the approximation. We will also work in absolute value for ease.
+
+```{r}
 #We make a fast discrete fourier transform 
-
 s0t<-fft(s0)
 s0t<-abs(s0t)
 s1t<-fft(s1)
 s1t<-abs(s1t)
 
-sc<-cbind(s0,s1)
+
 sct<-cbind(s0t,s1t)
 
+#Making the functional data
+
+nbx<-291
+basisx <- create.fourier.basis(c(0,5148),nbasis = nbx )
+fdst<-Data2fd((sct),seq(0,5148,length=5148),basisobj = basisx)
+
 par(mfrow=c(1,2))
-plot(fdata(t(sc)))
-plot(fdata(t(sct)))
+plot(fdst,main="Functional data approach",xlab="Time",
+        ylab="Amplitude")
+plot.ts(sct[,1],main="Real data",xlab="Time",
+        ylab="Amplitude")
+lines(sct[,2], col = "red")
+
+
+
 
 ```
 
-## Second level header
+As we can see, the approximation is much better than the first attempt.
 
-You can add more headers by adding more hashtags. These won't be put into the table of contents
-
-### third level header
-
-Here's an even lower level header
-
-# My second post (note the order)
-
-2018 | 7 | 23 Last compiled: `r Sys.Date()`
-
-I'm writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom
-
-# Adding R stuff
-
-So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the sam place. 
-
-So, let's say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation =1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:
 
 ```{r}
-samples <- rnorm(100, mean=0, sd=1)
-hist(samples)
+
+temp = list.files(pattern="*wav")
+myfiles = lapply(temp, load.wave)
+
+M<-matrix(data=0,nrow = 50,ncol = 6273)
+for (i in 1:50) {
+ 
+  M[i,1:length(myfiles[[i]])]<-myfiles[[i]]
+    
+}
+
+#Our functional covariable
+
+x<-abs(t(fft(M)))
+nbx<-291
+basisx <- create.fourier.basis(c(0,6273),nbasis = nbx )
+SFD<-Data2fd((x),seq(0,7038,length=7038),basisobj = basisx)
+
+
+
+
 ```
 
-When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag), from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You learn all of these things and more can be customized in each R code block.
+##The MNIST dataset.
 
-# The big idea
+The following image shows a set of handwritten  numbers from the MNIST data set.
 
-Use this lab journal to record what you do in R. This way I will be able to see what you are doing and help you along the way. You will also be creating a repository of all the things you do. You can make posts about everything. Learning specific things in R (project unrelated), and doing things for the project that we will discuss at the beginning of the Fall semester. You can get started now by fiddling around with googling things, and trying stuff out in R. I've placed some helpful starting links in the links page on this website
+![](images/mnist.png)
 
-# What can you do right now by yourself?
 
-It's hard to learn programming when you don't have specific problems that you are trying to solve. Everything just seems abstract.
+
+The dataset has 785 colums. The firts one indicates the value of the handwrite number and the next 784 the value of the pixels. This pixel form a 28x28 image.
+
+```{r}
+train<-read.csv(file = "datos/train.csv")
+head(train)
+
+
+```
+
+We only will work with the number 0. Since we just have 50 voice note  of the number 0, we will only take 50 random 0 from the dataset.
+
+```{r}
+ii<-which(train$label==0)
+index<-sample(ii,50)
+
+#Our functional response model 
+
+y <-t(train[index,2:ncol(train)])
+nby<-199
+basisy<-  create.fourier.basis(c(0,784),nbasis = nby )
+DFD<-Data2fd((y),seq(0,784,length=784),basisobj = basisy)
+
+
+
+```
+
+
+
+
+
+
+
 
 I wrote an [introductory programming book that introduces R](https://crumplab.github.io/programmingforpsych/), and gives some [concrete problems for you to solve](https://crumplab.github.io/programmingforpsych/programming-challenges-i-learning-the-fundamentals.html). 
 
-To get the hang of journaling and solving the problems to learn programming, my suggestion is that you use this .Rmd file to solve the problems. It would look like this:
-
-# Problem 1
-
-Do simple math with numbers, addition, subtraction, multiplication, division
-
-```{r}
-1+2
-2*5
-5/3
-(1+6+4)/5
-
-```
-
-# Problem 2
-
-Put numbers into variables, do simple math on the variables
-
-```{r}
-a<-1
-b<-2
-a+b
-
-d<-c(1,2,3)
-e<-c(5,6,7)
-d+e
-d*e
-d/e
-
-```
-
-# Problem 3
-
-Write code that will place the numbers 1 to 100 separately into a variable using for loop. Then, again using the seq function.
-
-```{r}
-# for loop solution
-# i becomes the number 1 to 100 at each step of the loop
 
 
-a <- length(100) # make empty variable, set length to 100
-for (i in 1:100){
-  a[i] <-i #assigns the number in i, to the ith index of a
-}
 
-print(a)
 
-# for loop solution #2
 
-a<-c() #create empty variable using combine command
-for (i in 1:100){
-  a<-c(a,i) # keeps combining a with itself and the new number in i
-}
-print(a)
 
-# seq solution
-a <- seq(1,100,1) # look up help for seq using ?seq() in console
-print(a)
 
-```
 
-# Replace this with problem 4
-
-And keep going. Try to solve the problems with different scripts that provide the same solution. Good luck, Happy coding.
