@@ -22,7 +22,7 @@ In this section our focus will be in find a way to implement the functional regr
 
 The first step in our analysis will be to study the behavior of our audio notes. We will represent two voice note using functional data.
 
-```{r warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 library(seawaveQ)
 library(audio)
 library(fda.usc)
@@ -50,6 +50,8 @@ plot.ts(sc[,1],main="Real data",xlab="Time",
 lines(sc[,2], col = "red")
 
 ```
+
+
 We have used a 291 elements of the Fourier basis. It is a very large number of elements, and the approximation isn't as good as we expect. The problem here is that our data is very rough. We will make a discrete Fourier transform of the data (we want to work in frequency domain) to make easier the approximation. We will also work in absolute value for ease.
 
 ```{r warning=FALSE}
