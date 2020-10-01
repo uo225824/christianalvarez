@@ -11,7 +11,7 @@
 
 
 
-<title>Voice to image with functional regression</title>
+<title>Aplication of functional data to MNIST</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -299,14 +299,14 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Voice to image with functional regression</h1>
+<h1 class="title toc-ignore">Aplication of functional data to MNIST</h1>
 
 </div>
 
 
 <div id="voice-to-image-with-functional-regression" class="section level1">
 <h1>Voice to image with functional regression</h1>
-<p>2020 | 07 | 23 Last compiled: 2020-09-29</p>
+<p>2020 | 07 | 23 Last compiled: 2020-10-01</p>
 <p>In this section our focus will be in find a way to implement the functional regression with functional response to the MNIST problem. Our goal will be to a make a model where the response is a handwritte number and the covariable a voice note of the number. Due to the computational cost of this model, we will focus on a simple case, using only the number zero.</p>
 <div id="the-voice-data." class="section level2">
 <h2>The voice data.</h2>
@@ -421,7 +421,7 @@ tini &lt;- proc.time()
 res.fr = fregre.basis.fr(datosf[-ll],datosfN[-ll],basisx,basisy,lambda.s = lambdas,lambda.t = lambdat,Lfdobj.s = 1,Lfdobj.t = 1)
 proc.time() - tini</code></pre>
 <pre><code>##    user  system elapsed 
-##  282.06    2.37  284.46</code></pre>
+##  295.26    2.40  297.70</code></pre>
 <pre class="r"><code>prf&lt;-predict(res.fr,datosf[ll],basisobj = basisy)
 pr&lt;-eval.fd(prf,seq(0,784,length=784))</code></pre>
 <p>To determine if our model is capable of creating handwritten number images, we will only draw the output of our model using the test set.</p>
@@ -436,8 +436,89 @@ A1&lt;-matrix(as.double(pr[,4]),nrow = 28,byrow = T)
 image(rotate(A1))</code></pre>
 <p><img src="Journal_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
 <p>The results are not entirely good, but we can clearly see that it is a 0. On the other hand, it should be noted that we are only working with a very low number of base elements. As we increase the number of elements, the resolution of the image also increases.</p>
-<p>I wrote an <a href="https://crumplab.github.io/programmingforpsych/">introductory programming book that introduces R</a>, and gives some <a href="https://crumplab.github.io/programmingforpsych/programming-challenges-i-learning-the-fundamentals.html">concrete problems for you to solve</a>.</p>
 </div>
+</div>
+<div id="mnist-classification-problem-with-functional-data." class="section level1">
+<h1>MNIST classification problem with functional data.</h1>
+<pre class="r"><code>data&lt;-read.csv(file = &quot;spoken/datos/train.csv&quot;,sep = &quot;,&quot;)
+datap&lt;-factor(data$label[1:4000])
+fdatap&lt;-fdata(data[1:4000,2:ncol(data)])
+ftestp&lt;-fdata((data[31000:31500,2:ncol(data)]))
+valuesp&lt;-factor(data$label[31000:31500])
+ldatap=list(df=data.frame(ipho=datap),Xpho=fdatap)
+ldatanew=list(df=data.frame(ipho=valuesp),Xpho=ftestp)</code></pre>
+<pre class="r"><code>opt.pc=fdata2pc(fdatap,ncomp=2)
+pcb&lt;-round(opt.pc$d^2/sum(opt.pc$d^2),5) #Porc. de variabilidad
+sum(pcb[1:35])</code></pre>
+<pre><code>## [1] 0.76521</code></pre>
+<pre class="r"><code>b.xp=list(Xpho=create.pc.basis(fdatap,1:35))</code></pre>
+<pre class="r"><code>#Modelo SVM
+t&lt;-proc.time()
+pho.svm&lt;-classif.svm(ipho~Xpho,ldatap,basis.x = b.xp)</code></pre>
+<pre><code>## [1] &quot;fdata2model&quot;
+## [1] &quot;sale fdata2model&quot;</code></pre>
+<pre class="r"><code>proc.time() - t</code></pre>
+<pre><code>##    user  system elapsed 
+##   22.02    0.72   22.74</code></pre>
+<pre class="r"><code>pr.svm=predict(pho.svm,ldatanew)
+bb&lt;-table(ldatanew$df$ipho,pr.svm)
+bb</code></pre>
+<pre><code>##    pr.svm
+##      0  1  2  3  4  5  6  7  8  9
+##   0 45  0  0  0  0  0  0  0  0  0
+##   1  0 64  0  0  0  0  0  0  0  0
+##   2  0  0 52  0  1  0  1  2  1  1
+##   3  0  0  0 44  0  1  0  1  0  1
+##   4  0  0  1  0 45  0  2  0  0  1
+##   5  0  0  0  0  0 47  0  0  0  0
+##   6  0  0  0  0  1  1 34  0  0  0
+##   7  0  0  1  0  1  0  0 47  0  3
+##   8  0  1  0  1  1  0  0  1 44  1
+##   9  0  0  0  0  0  0  0  0  0 54</code></pre>
+<pre class="r"><code>psvm&lt;-0
+for (i in 1:10) {
+  psvm[i]&lt;-bb[i,i]/sum(bb[i,])
+}
+psvm</code></pre>
+<pre><code>##  [1] 1.0000000 1.0000000 0.8965517 0.9361702 0.9183673 1.0000000 0.9444444
+##  [8] 0.9038462 0.8979592 1.0000000</code></pre>
+<pre class="r"><code>mean(psvm)</code></pre>
+<pre><code>## [1] 0.9497339</code></pre>
+<pre class="r"><code>#rf
+t&lt;-proc.time()
+pho.rf&lt;-classif.randomForest(ipho~Xpho,ldatap,basis.x=b.xp)</code></pre>
+<pre><code>## randomForest 4.6-14</code></pre>
+<pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
+<pre><code>## [1] &quot;fdata2model&quot;
+## [1] &quot;sale fdata2model&quot;</code></pre>
+<pre class="r"><code>proc.time() - t</code></pre>
+<pre><code>##    user  system elapsed 
+##   40.91    0.44   41.37</code></pre>
+<pre class="r"><code>pr.rf=predict(pho.rf,ldatanew)
+bb&lt;-table(ldatanew$df$ipho,pr.rf)
+bb</code></pre>
+<pre><code>##    pr.rf
+##      0  1  2  3  4  5  6  7  8  9
+##   0 44  0  0  0  0  1  0  0  0  0
+##   1  0 64  0  0  0  0  0  0  0  0
+##   2  0  0 53  0  1  0  1  1  2  0
+##   3  0  0  2 42  0  1  0  0  2  0
+##   4  0  0  1  0 41  1  2  2  0  2
+##   5  0  0  0  1  1 45  0  0  0  0
+##   6  0  0  0  0  1  3 32  0  0  0
+##   7  0  0  0  0  4  1  0 45  0  2
+##   8  0  1  0  1  0  4  0  1 41  1
+##   9  0  0  1  1  4  0  0  1  1 46</code></pre>
+<pre class="r"><code>pgrf&lt;-0
+for (i in 1:10) {
+  pgrf[i]&lt;-bb[i,i]/sum(bb[i,])
+}
+pgrf</code></pre>
+<pre><code>##  [1] 0.9777778 1.0000000 0.9137931 0.8936170 0.8367347 0.9574468 0.8888889
+##  [8] 0.8653846 0.8367347 0.8518519</code></pre>
+<pre class="r"><code>mean(pgrf)</code></pre>
+<pre><code>## [1] 0.9022229</code></pre>
+<p>I wrote an <a href="https://crumplab.github.io/programmingforpsych/">introductory programming book that introduces R</a>, and gives some <a href="https://crumplab.github.io/programmingforpsych/programming-challenges-i-learning-the-fundamentals.html">concrete problems for you to solve</a>.</p>
 </div>
 
 

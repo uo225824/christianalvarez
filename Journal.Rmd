@@ -1,5 +1,5 @@
 ---
-title: "Voice to image with functional regression"
+title: "Aplication of functional data to MNIST"
 output:
   html_document:
     toc: true
@@ -186,6 +186,64 @@ image(rotate(A1))
 
 
 The results are not entirely good, but we can clearly see that it is a 0. On the other hand, it should be noted that we are only working with a very low number of base elements. As we increase the number of elements, the resolution of the image also increases.
+
+
+
+#MNIST classification problem with functional data.
+
+
+```{r message=FALSE, warning=FALSE}
+data<-read.csv(file = "spoken/datos/train.csv",sep = ",")
+datap<-factor(data$label[1:4000])
+fdatap<-fdata(data[1:4000,2:ncol(data)])
+ftestp<-fdata((data[31000:31500,2:ncol(data)]))
+valuesp<-factor(data$label[31000:31500])
+ldatap=list(df=data.frame(ipho=datap),Xpho=fdatap)
+ldatanew=list(df=data.frame(ipho=valuesp),Xpho=ftestp)
+```
+
+
+```{r}
+opt.pc=fdata2pc(fdatap,ncomp=2)
+pcb<-round(opt.pc$d^2/sum(opt.pc$d^2),5) #Porc. de variabilidad
+sum(pcb[1:35])
+b.xp=list(Xpho=create.pc.basis(fdatap,1:35))
+```
+
+```{r}
+#Modelo SVM
+t<-proc.time()
+pho.svm<-classif.svm(ipho~Xpho,ldatap,basis.x = b.xp)
+proc.time() - t
+pr.svm=predict(pho.svm,ldatanew)
+bb<-table(ldatanew$df$ipho,pr.svm)
+bb
+
+psvm<-0
+for (i in 1:10) {
+  psvm[i]<-bb[i,i]/sum(bb[i,])
+}
+psvm
+mean(psvm)
+```
+
+```{r}
+#rf
+set.seed(12345)
+t<-proc.time()
+pho.rf<-classif.randomForest(ipho~Xpho,ldatap,basis.x=b.xp)
+proc.time() - t
+pr.rf=predict(pho.rf,ldatanew)
+bb<-table(ldatanew$df$ipho,pr.rf)
+bb
+
+pgrf<-0
+for (i in 1:10) {
+  pgrf[i]<-bb[i,i]/sum(bb[i,])
+}
+pgrf
+mean(pgrf)
+```
 
 
 
