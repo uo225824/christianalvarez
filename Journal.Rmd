@@ -191,6 +191,7 @@ The results are not entirely good, but we can clearly see that it is a 0. On the
 
 #MNIST classification problem with functional data.
 
+The MNIST problem is one of the most common and simple classification problem. We will try use a different point of view, instead of use a NN or a CNN (We have alredy done a CNN to solve the MNIST problem, the code can be found in my github) we will use a functional data approach. The techniques that we will use are the a functional SVM and random forest. This two techniques are probably the most used in the classification problems.
 
 ```{r message=FALSE, warning=FALSE}
 data<-read.csv(file = "spoken/datos/train.csv",sep = ",")
@@ -202,6 +203,7 @@ ldatap=list(df=data.frame(ipho=datap),Xpho=fdatap)
 ldatanew=list(df=data.frame(ipho=valuesp),Xpho=ftestp)
 ```
 
+We use the functional principal components to represent our functional data. The reader could think why we didn't use functional principal components in the previus section, to solve the problem of the number of components in the basis. We didn't use because the fregre.basis.fr function doesn't allow the principal component basis.
 
 ```{r}
 opt.pc=fdata2pc(fdatap,ncomp=2)
@@ -210,8 +212,12 @@ sum(pcb[1:35])
 b.xp=list(Xpho=create.pc.basis(fdatap,1:35))
 ```
 
+Like in the previous section, we will focus in a simple case. We will only use 35 elements of the basis. The reason of this is because of the low computation power that we have.
+
+We start with SVM. In both case we will only use a 4000 elements to build the model and 500 to test.
+
 ```{r}
-#Modelo SVM
+#SVM model
 t<-proc.time()
 pho.svm<-classif.svm(ipho~Xpho,ldatap,basis.x = b.xp)
 proc.time() - t
@@ -228,7 +234,7 @@ mean(psvm)
 ```
 
 ```{r}
-#rf
+#rf model
 set.seed(12345)
 t<-proc.time()
 pho.rf<-classif.randomForest(ipho~Xpho,ldatap,basis.x=b.xp)
