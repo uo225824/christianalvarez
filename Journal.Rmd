@@ -191,7 +191,7 @@ The results are not entirely good, but we can clearly see that it is a 0. On the
 
 #MNIST classification problem with functional data.
 
-The MNIST problem is one of the most common and simple classification problem. We will try use a different point of view, instead of use a NN or a CNN (We have alredy done a CNN to solve the MNIST problem, the code can be found in my github) we will use a functional data approach. The techniques that we will use are the a functional SVM and random forest. This two techniques are probably the most used in the classification problems.
+The MNIST problem is one of the most common and simple classification problem. We will try use a different point of view, instead of use a NN or a CNN (We have alredy done a CNN to solve the MNIST problem, the code can be found in my [github](https://github.com/uo225824/Python-tutorial/blob/master/Kaggle/MNIST/MNIST.py)) we will use a functional data approach. The techniques that we will use are the a functional SVM and random forest. This two techniques are probably the most used in the classification problems.
 
 ```{r message=FALSE, warning=FALSE}
 data<-read.csv(file = "spoken/datos/train.csv",sep = ",")
@@ -214,47 +214,68 @@ b.xp=list(Xpho=create.pc.basis(fdatap,1:35))
 
 Like in the previous section, we will focus in a simple case. We will only use 35 elements of the basis. The reason of this is because of the low computation power that we have.
 
-We start with SVM. In both case we will only use a 4000 elements to build the model and 500 to test.
 
-```{r}
+### Functional SVM
+We start with SVM. In both case we will only use a 4000 elements to build the model and 500 to test. Notice that we only use the 10% of the data for the training.
+
+```{r message=FALSE, warning=FALSE}
 #SVM model
 t<-proc.time()
 pho.svm<-classif.svm(ipho~Xpho,ldatap,basis.x = b.xp)
 proc.time() - t
+```
+
+
+
+```{r}
 pr.svm=predict(pho.svm,ldatanew)
 bb<-table(ldatanew$df$ipho,pr.svm)
 bb
+```
 
+
+In the table we can see our result for the classifications of test set. The results are quite good. The percentage of success is
+
+```{r}
 psvm<-0
 for (i in 1:10) {
   psvm[i]<-bb[i,i]/sum(bb[i,])
 }
-psvm
 mean(psvm)
 ```
 
-```{r}
+
+### Functional random forest
+The second method is the random forest.
+```{r message=FALSE, warning=FALSE}
 #rf model
 set.seed(12345)
 t<-proc.time()
 pho.rf<-classif.randomForest(ipho~Xpho,ldatap,basis.x=b.xp)
 proc.time() - t
-pr.rf=predict(pho.rf,ldatanew)
-bb<-table(ldatanew$df$ipho,pr.rf)
-bb
-
-pgrf<-0
-for (i in 1:10) {
-  pgrf[i]<-bb[i,i]/sum(bb[i,])
-}
-pgrf
-mean(pgrf)
 ```
 
 
 
+```{r}
+pr.rf=predict(pho.rf,ldatanew)
+bb<-table(ldatanew$df$ipho,pr.rf)
+bb
+```
 
-I wrote an [introductory programming book that introduces R](https://crumplab.github.io/programmingforpsych/), and gives some [concrete problems for you to solve](https://crumplab.github.io/programmingforpsych/programming-challenges-i-learning-the-fundamentals.html). 
+
+```{r}
+pgrf<-0
+for (i in 1:10) {
+  pgrf[i]<-bb[i,i]/sum(bb[i,])
+}
+mean(pgrf)
+```
+
+
+The results are similar in both cases. We have a really good performance using only a 10% of the training set. 
+
+
 
 
 

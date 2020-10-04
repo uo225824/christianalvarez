@@ -6,6 +6,8 @@ navbar:
       href: index.html
     - text: "Aplication of functional data to MNIST"
       href: Journal.html
+    - text: "FTS for dollar/euro"
+      href: fts.html
     - text: "Links"
       href: Links.html
 output_dir: "docs"

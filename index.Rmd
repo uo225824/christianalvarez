@@ -19,14 +19,14 @@ output: html_document
 
 # **About me**
 
-My name is Christian. I am a physicist and statistician from the University of Oviedo and the University of Santiago de Compostela. I've always been fascinated by math but it was by doing my final year project when I became interested in the world of statistics and machine learning.
+My name is Christian. I am a physicist and statistician from the University of Oviedo and the University of Santiago de Compostela. I've always been fascinated by math but it was doing my final year project when I became interested in the world of statistics and machine learning.
 
 ## Knowledge
 
 
 1. Programming: R (advanced), Python (intermediate), MATLAB (intermediate), C (basic), SQL (basic).
 
-2. knowledge of TensorFlow, keras, numpy, matplotlib, pandas ...
+2. Knowledge of TensorFlow, keras, numpy, matplotlib, pytorch, gym ,pandas, ...
 
 3. Operating systems: Linux and Windows
 

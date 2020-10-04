@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Using functional time series for the forecast of the dollar/euro ratio</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Christian´s Site</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Journal.html">Aplication of functional data to MNIST</a>
+</li>
+<li>
+  <a href="fts.html">FTS for dollar/euro</a>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Using functional time series for the forecast of the dollar/euro ratio</h1>
+
+</div>
+
+
+<p>In this chapter we will focus on applying the different methodologies collected throughout my <a href="http://eio.usc.es/pub/mte/descargas/ProyectosFinMaster/Proyecto_1794.pdf">thesis</a> to a case with real data. Specifically, we will use parametric and non-parametric techniques and autoregressive models in Hilbert spaces of order 1. As a set of data to be analyzed, we will use the exchange price between the dollar and the euro. Our objective is to compare the results of the different methodologies, in order to determine which is the most suitable for this particular case.</p>
+<p>Therefore, a question arises, such as determining which model is the most appropriate. To solve this problem we will use different error measures.</p>
+<div id="error-measurements." class="section level2">
+<h2>Error measurements.</h2>
+<p>This section will give a brief description of the different precision measures, which can be calculated for the residuals of a prediction model in the framework of the functional data time series. In general, there is no standard criterion for the measurement of errors and it generally depends on the type of data and the application. In this work you will use three of the most common measures in this type of analysis:This section will give a brief description of the different precision measures, which can be calculated for the residuals of a prediction model in the framework of the functional data time series. In general, there is no standard criterion for the measurement of errors and it generally depends on the type of data and the application. In this work you will use three of the most common measures in this type of analysis:</p>
+<ul>
+<li>The functional mean absolute error (FMAE) defined as</li>
+</ul>
+<p><span class="math display">\[FMAE=\frac{1}{N}\sum_{n=1}^{T}\Vert X_{n}-\widehat{X}_{n} \Vert_{L^1}=\frac{1}{N}\sum_{t=1}^{T}\int \vert  X_{n}(t)-\widehat{X}_{n}(t) \vert dt\]</span></p>
+<ul>
+<li>The functional mean square error (FMSE) defined as</li>
+</ul>
+<p><span class="math display">\[FMSE= \frac{1}{N}\sum_{n=1}^{T}\Vert X_{n}-\widehat{X}_{n} \Vert_{L^2}^2=\frac{1}{N}\sum_{t=1}^{T}\int \left(   X_{n}(t)-\widehat{X}_{n}(t) \right) ^2 dt\]</span></p>
+<ul>
+<li>If we apply the root to FMSE we have FRMSE</li>
+</ul>
+<p><span class="math display">\[FRMSE= \sqrt{\frac{1}{N}\sum_{n=1}^{T}\Vert X_{n}-\widehat{X}_{n} \Vert_{L^2}}=\sqrt{\frac{1}{N}\sum_{t=1}^{T}\int \left(   X_{n}(t)-\widehat{X}_{n}(t) \right) ^2 dt}\]</span></p>
+</div>
+<div id="application-of-the-models-with-functional-response." class="section level2">
+<h2>Application of the models with functional response.</h2>
+<p>Our data set consists of the price of the exchange between the dollar and the euro since the formation of the latter.</p>
+<div class="figure">
+<img src="images/ratiode.png" />
+
+</div>
+<p>The objective of the analysis is to study the behavior of the time series using the tools studied in the previous chapters. We will treat each functional data as the function that is estimated from the data of 30 days (one month). We will use a large collection of functional data (around the first 150 months) to fit the model, and the following remaining months as a test. Our response in this analysis will be functional and unlike what is usually done in classical time series models, our predictions will only be one step. With one step predictions we mean that to make the prediction of one month we use the real value of the previous month. This means that if we have already made a prediction for the month of February and we want to make one for March, we will use the real value for the month of February and not the prediction. . Imposing this condition comes from the fact that when working with functional response it is not in principle possible to generate a confidence interval for the prediction. This makes long-term predictions meaningless. In the case of classical time series we do not have this problem, since we could always use bootstrap techniques to determine the confidence intervals. It should be noted that this type of time series can be treated from completely different approaches. Among them we can highlight the stochastic differential equations, widely used in financial studies.</p>
+<div id="application-of-the-parametric-regression-model." class="section level3">
+<h3>Application of the parametric regression model.</h3>
+<p>The first model that we will study will be precisely the first detailed in the work, the functional regression model with parametric functional response. We will use the penalized version of the model proposed by Ramsay that was detailed in chapter two.</p>
+<div class="figure">
+<img src="images/rPF.png" />
+
+</div>
+<p>The image shows the fit of the parametric regression model. The estimate of the data set used for the adjustment is represented in blue, while the data set used as the test is represented in red. The fit is considerably good, being slightly less sensitive to abrupt trend changes.</p>
+</div>
+<div id="application-of-the-non-parametric-regression-model." class="section level3">
+<h3>Application of the non-parametric regression model.</h3>
+<p>Our next study model is the functional regression model with nonparametric functional response. The main advantage of this model over the previous one is that it is more general, since it does not assume any linearity condition. For our study we will be based on Ferraty’s ideas, developed in chapter two and three.</p>
+<div class="figure">
+<img src="images/rNPF.png" />
+
+</div>
+<p>As can be seen in the image the non-parametric regression model had a significantly worse result than the parametric one. While it is true that it hits the trend of the series, the result is not as good as one might expect, especially considering that it is a more flexible model. This result may be due to a window selection that is not as exhaustive as necessary. Another possibility is the use of the FMSE error measure to fit the model, it may not be the most suitable for this particular case.</p>
+</div>
+<div id="application-of-the-functional-neural-network-model." class="section level3">
+<h3>Application of the functional neural network model.</h3>
+<p>The other non-parametric methodology proposed was the use of a single-layer functional neural network. As with the case of non-parametric regression, not assuming linearity gives us more flexibility in the model. However, neural network models can have serious overfitting problems. As mentioned in chapter three we will use the descent of the gradient to train the model using the data set for a test as validation elements.</p>
+<div class="figure">
+<img src="images/trn.png" />
+
+</div>
+<p>In the image we can see the training behavior of our network. If we increase the number of iterations, the fit of the model will improve, but as we can see, the improvements are increasingly reduced. In this case, a fixed learning rate has been used, although techniques could be used in which the parameter was modified in order to obtain a faster convergence.</p>
+<div class="figure">
+<img src="images/rfn.png" />
+
+</div>
+<p>Unlike non-parametric regression, this one does seem to have made a good fit in practically the entire time series. Similar to how the parametric regression model behaved. We see that the blue trace fits very well to the original curve, as does the red trace, which indicates that the model has not had any overfitting problem. One of the most particular issues that the neural network model has is the type of predictions it makes. Because the data can be quite abrupt and the type of one-step prediction we are studying, in many cases models experience a large gap between the end of one prediction and the start of the next. In the case of the neural network model, this behavior is clearer than in any other model.</p>
+</div>
+<div id="application-of-the-autoregressive-model-in-hilbert-spaces." class="section level3">
+<h3>Application of the autoregressive model in Hilbert spaces.</h3>
+<p>The last model that we will apply is the autoregressive in Hilbert spaces that was presented in the fourth chapter. We will focus solely and exclusively on the autoregressive model of order one. Two different types of techniques are mentioned when using an orthonormal basis to calculate an estimator of the operator $  rho $, the principal components and the partial least squares basis. For this case we are going to use main components which is the most common.</p>
+<div class="figure">
+<img src="images/arhf.png" />
+
+</div>
+<p>As we can see in the image the result is quite good. If it is true that there seems to be a small lag between the prediction and the original data set, although it is already something that we have seen slightly in the other models, it seems that in this case it is clearer. It should be noted that we only needed a single main component.</p>
+</div>
+<div id="comparison-using-error-measurements." class="section level3">
+<h3>Comparison using error measurements.</h3>
+<p>IN WORKING…</p>
+</div>
+</div>
+<div id="application-of-the-model-with-scalar-response." class="section level2">
+<h2>Application of the model with scalar response.</h2>
+<p>So far we have only focused on analyzing the data set of the ratio between the price of the dollar and the euro from a point of view in which our answer is entirely functional. Now we will try to study the same problem using the other approach described in the work, when the answer is scalar.</p>
+<p>To focus the problem on the scalar response case, we must have a response variable that is a scalar. We will work with a new variable that will not be more than the average of the ratio. The objective is therefore to determine the average value for the following month based on how it has evolved over the previous month. Since the model that gave the best result in the case with functional response was the parametric one, we will only focus on this one. We will use a penalized model identical to the previous case, but for a model with a scalar response and another model generated by partial least squares, both described in topic two. We will start by studying the penalized parametric model.</p>
+<div id="penalized-parametric-model." class="section level3">
+<h3>Penalized parametric model.</h3>
+<p>As we did in the case with functional response, we will divide the time series. We will do it in an identical way to the previous sections, with the difference that in this case we will only focus on the prediction of the data not used in the training set.</p>
+<div class="figure">
+<img src="images/fts2.PNG" />
+
+</div>
+<p>If we look at the image we have the real values represented in black while our predictions are in red. The results at first glance seem considerably good. The image shows the graph of the model residuals. The behavior is at least a little suspicious. To determine the independence of the residuals, a Ljung-Box test was performed for the first fifteen lags. The image shows the p-values for the different tests, where the red line represents the p-value = 0.05.</p>
+<p>We could perform a normality test with the hope of being able to determine a prediction interval, however the residuals are not homoscedastic, so we cannot use this way. What we can do is wild boostrap to determine the prediction intervals. The prediction intervals have been chosen to reach a 99 $ % $ confidence.</p>
+<div class="figure">
+<img src="images/wbe.png" />
+
+</div>
+</div>
+<div id="partial-least-squares-model." class="section level3">
+<h3>Partial least squares model.</h3>
+<p>We will do an analysis identical to that of the penalized parametric model with the only difference that in this case we will not use any penalties. What we do have to take into account about this model is that it focuses on determining an orthonormal basis focused on achieving the best possible prediction. Once we have determined the base, using a greater number of elements does not imply a better result. Therefore, something similar to the ARH (1) models happens to us when we use principal components. We will use the root mean square error to determine the most suitable number of elements in the base.</p>
+<div class="figure">
+<img src="images/fts1.PNG" />
+
+</div>
+<p>We have used the first three components pls for the model. The results are quite similar to what we obtained in the penalized parametric model. As we did in the previous case, we are going to perform wild bootstrap on the residuals to determine a confidence interval on the predictions.</p>
+<div class="figure">
+<img src="images/wbpls.png" />
+
+</div>
+</div>
+<div id="comparison-using-error-measurements.-1" class="section level3">
+<h3>Comparison using error measurements.</h3>
+<p>IN WORKING</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
