@@ -309,7 +309,7 @@ div.tocify {
 
 <div id="voice-to-image-with-functional-regression" class="section level1">
 <h1>Voice to image with functional regression</h1>
-<p>2020 | 07 | 23 Last compiled: 2020-10-04</p>
+<p>2020 | 07 | 23 Last compiled: 2020-10-05</p>
 <p>In this section our focus will be in find a way to implement the functional regression with functional response to the MNIST problem. Our goal will be to a make a model where the response is a handwritte number and the covariable a voice note of the number. Due to the computational cost of this model, we will focus on a simple case, using only the number zero.</p>
 <div id="the-voice-data." class="section level2">
 <h2>The voice data.</h2>
@@ -424,7 +424,7 @@ tini &lt;- proc.time()
 res.fr = fregre.basis.fr(datosf[-ll],datosfN[-ll],basisx,basisy,lambda.s = lambdas,lambda.t = lambdat,Lfdobj.s = 1,Lfdobj.t = 1)
 proc.time() - tini</code></pre>
 <pre><code>##    user  system elapsed 
-##  284.19    2.74  287.03</code></pre>
+##  292.58    2.73  295.33</code></pre>
 <pre class="r"><code>prf&lt;-predict(res.fr,datosf[ll],basisobj = basisy)
 pr&lt;-eval.fd(prf,seq(0,784,length=784))</code></pre>
 <p>To determine if our model is capable of creating handwritten number images, we will only draw the output of our model using the test set.</p>
@@ -468,7 +468,7 @@ pho.svm&lt;-classif.svm(ipho~Xpho,ldatap,basis.x = b.xp)</code></pre>
 ## [1] &quot;sale fdata2model&quot;</code></pre>
 <pre class="r"><code>proc.time() - t</code></pre>
 <pre><code>##    user  system elapsed 
-##   20.47    0.54   27.41</code></pre>
+##   20.86    0.40   27.98</code></pre>
 <pre class="r"><code>pr.svm=predict(pho.svm,ldatanew)
 bb&lt;-table(ldatanew$df$ipho,pr.svm)
 bb</code></pre>
@@ -503,7 +503,7 @@ pho.rf&lt;-classif.randomForest(ipho~Xpho,ldatap,basis.x=b.xp)</code></pre>
 ## [1] &quot;sale fdata2model&quot;</code></pre>
 <pre class="r"><code>proc.time() - t</code></pre>
 <pre><code>##    user  system elapsed 
-##   39.29    0.31   39.95</code></pre>
+##   40.14    0.22   40.73</code></pre>
 <pre class="r"><code>pr.rf=predict(pho.rf,ldatanew)
 bb&lt;-table(ldatanew$df$ipho,pr.rf)
 bb</code></pre>

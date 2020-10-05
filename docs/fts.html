@@ -11,7 +11,7 @@
 
 
 
-<title>Using functional time series for the forecast of the dollar/euro ratio</title>
+<title>FTS for dollar/euro</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -302,11 +302,14 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Using functional time series for the forecast of the dollar/euro ratio</h1>
+<h1 class="title toc-ignore">FTS for dollar/euro</h1>
 
 </div>
 
 
+<p>Throughout this section we will give a brief description of the results obtained in my master’s <a href="http://eio.usc.es/pub/mte/descargas/ProyectosFinMaster/Proyecto_1794.pdf">thesis</a>. For simplicity we will skip the code, but the reader can find it on my <a href="https://github.com/uo225824/Functional-time-series-R/tree/master">github</a>. Certain theoretical concepts regarding the models will also be omitted, which are further detailed in the <a href="http://eio.usc.es/pub/mte/descargas/ProyectosFinMaster/Proyecto_1794.pdf">thesis</a>.</p>
+<div id="using-functional-time-series-for-the-forecast-of-the-dollareuro-ratio" class="section level1">
+<h1>Using functional time series for the forecast of the dollar/euro ratio</h1>
 <p>In this chapter we will focus on applying the different methodologies collected throughout my <a href="http://eio.usc.es/pub/mte/descargas/ProyectosFinMaster/Proyecto_1794.pdf">thesis</a> to a case with real data. Specifically, we will use parametric and non-parametric techniques and autoregressive models in Hilbert spaces of order 1. As a set of data to be analyzed, we will use the exchange price between the dollar and the euro. Our objective is to compare the results of the different methodologies, in order to determine which is the most suitable for this particular case.</p>
 <p>Therefore, a question arises, such as determining which model is the most appropriate. To solve this problem we will use different error measures.</p>
 <div id="error-measurements." class="section level2">
@@ -376,7 +379,48 @@ div.tocify {
 </div>
 <div id="comparison-using-error-measurements." class="section level3">
 <h3>Comparison using error measurements.</h3>
-<p>IN WORKING…</p>
+<p>Determining which of the models performs better is something that can hardly be done with the naked eye. It is for this reason that at the beginning of this topic we have introduced three different types of error measures. Our goal now is to use these measurements in order to determine which is the most suitable model of all. The following table shows the different error measurements for the different models.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">ModelError</th>
+<th align="center">FMAE</th>
+<th align="center">FMSE</th>
+<th align="center">FRMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Parametric</td>
+<td align="center">0.013</td>
+<td align="center">0.0003</td>
+<td align="center">0.018</td>
+</tr>
+<tr class="even">
+<td align="center">Nonparametric</td>
+<td align="center">0.042</td>
+<td align="center">0.0023</td>
+<td align="center">0.048</td>
+</tr>
+<tr class="odd">
+<td align="center">Neural network</td>
+<td align="center">0.016</td>
+<td align="center">0.0005</td>
+<td align="center">0.022</td>
+</tr>
+<tr class="even">
+<td align="center">ARH(1)</td>
+<td align="center">0.017</td>
+<td align="center">0.0005</td>
+<td align="center">0.022</td>
+</tr>
+</tbody>
+</table>
+<p>While it is true that at the beginning of this section it is mentioned that it is difficult to determine which model gives the best results at first glance, the fact that the parametric model with the best results is not surprising. Likewise, that the worst-performing nonparametric model is no surprise either. The debate arises between the other two models, the neural network and the ARH (1), and the truth is that both models give quite similar results, the neural network model being slightly better.</p>
+<p>Therefore, we have that the best model for this analysis is the parametric regression. The main disadvantage is that we require a penalty and determining it can be computationally expensive. It should be mentioned that in our analysis we have determined the value of the penalty parameters without being conscientious and the result has still been really good.</p>
+<p>As for the non-parametric regression model, it is the one with the worst results. This may be because the model is considerably sensitive to the use of a given window, or that it may simply not be a suitable model for this particular case.</p>
+<p>The neural network model, although it is true that it obtains the second best results, is very close to the ARH model (1). It has the advantage that a longer computing time could obtain better results. However, its advantage is at the same time a disadvantage since it requires a very long time compared to the rest of the models to obtain a good result.</p>
+<p>The last model to be analyzed has been the autoregressive one in Hilbert spaces of order one. With slightly worse results than the neural network model, it is by far the fastest model of all. It should be noted that you only needed a single main component.</p>
 </div>
 </div>
 <div id="application-of-the-model-with-scalar-response." class="section level2">
@@ -412,7 +456,33 @@ div.tocify {
 </div>
 <div id="comparison-using-error-measurements.-1" class="section level3">
 <h3>Comparison using error measurements.</h3>
-<p>IN WORKING</p>
+<p>The results of both models are extremely similar. In order to determine which of the two gives a better result, we are going to carry out an analysis similar to the one done in the previous section. In this case we will work with the same error measures, but applied to the non-functional case.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">ModelError</th>
+<th align="center">MAE</th>
+<th align="center">MSE</th>
+<th align="center">RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Parametric</td>
+<td align="center">0.011</td>
+<td align="center">0.0002</td>
+<td align="center">0.014</td>
+</tr>
+<tr class="even">
+<td align="center">PLS</td>
+<td align="center">0.013</td>
+<td align="center">0.0003</td>
+<td align="center">0.017</td>
+</tr>
+</tbody>
+</table>
+<p>As with the model with functional response, the one that obtains the best results is the penalized parametric, although the results are quite similar. In both cases it is necessary to calculate the number of components to use or penalties, which makes the use of one or the other practically similar, in terms of computational cost.</p>
+</div>
 </div>
 </div>
 
