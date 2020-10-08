@@ -8,6 +8,8 @@ navbar:
       href: Journal.html
     - text: "FTS for dollar/euro"
       href: fts.html
+    - text: "DFE by orthonormal series"
+      href: orto.html
     - text: "Links"
       href: Links.html
 output_dir: "docs"

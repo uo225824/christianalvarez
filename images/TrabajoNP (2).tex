@@ -1,0 +1,266 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 1.3 (9/9/13)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+% Modified by Rosa M. Crujeiras
+% February 2017
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\documentclass[twoside]{article}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{latexsym}
+\usepackage[mathscr]{eucal}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{pdflscape} 
+\usepackage[spanish]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{Journal of Kernel Density Estimation$\bullet$ Abril 2019 $\bullet$ Vol. IV, No. 1} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+\renewcommand\spanishtablename{Tabla}
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Estimación de la función densidad por desarrollos en serie ortonormales}} % Article title
+
+\author{
+\large
+\textsc{Sergio Da Vila Davila y Christian Álvarez Peláez }\\[2mm] % Your name
+\normalsize Máster en Técnicas Estadísticas \\ % Your institution
+\normalsize \href{mailto:pepito@jejemail.com}{daviladavilasergio@gmail.com y christiaapin06@gmail.com} % Your email address
+\vspace{-5mm}
+}
+\date{}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+\maketitle % Insert title
+\thispagestyle{fancy} % All pages have headers and footers
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+
+\begin{abstract}
+\noindent 
+
+
+\end{abstract}
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+\begin{multicols}{2} % Two-column layout throughout the main article text
+%----------------------------------------------------------------------------------------%
+\section{Introducción}
+%----------------------------------------------------------------------------------------%
+
+La idea del siguiente trabajo será plantear una formulación alternativa a la estimación por tipo núcleo de la función de densidad. Para ello introducimos los desarrollos por series ortonormales.
+
+A lo largo del trabajo estudiamos la búsqueda del mejor estimador de la función de densidad a través de los desarrollos ortonormales. Para ello haremos uso, principalmente, de dos conceptos: la función de verosimilitud y los criterios de penalización. El objetivo del primero será el de obtener el mejor estimador posible, mientras que los criterios de penalización nos servirán para tener en cuenta cuestiones de forma como la curtosis o el número de modas de la curva.
+%----------------------------------------------------------------------------------------%
+\section{Desarrollo}
+%----------------------------------------------------------------------------------------%
+
+%----------------------------------------------------------------------------------------%
+
+%----------------------------------------------------------------------------------------%
+\subsection{Series ortonormales}
+%----------------------------------------------------------------------------------------%
+Sea $f(x)$ un función definida en el espacio de Hilbert $\Omega$ con producto interno definido como:
+
+\begin{equation}
+\langle f \vert g \rangle = \int_{\Omega} f(x)^*g(x)dx
+\end{equation}
+
+y norma:
+
+\begin{equation}
+\Vert x \Vert=\sqrt{\langle x \vert x \rangle}
+\end{equation}
+La función $f(x)$ se dice que es cuadrado integrable en el espacio $\Omega$ si cumple la condición:
+
+\begin{equation}
+\langle f \vert f \rangle = \int_{\Omega} f(x)^*f(x)dx= \int_{\Omega} \vert f(x) \vert^2 dx < \infty
+\end{equation}
+
+De ahora en adelante trabajaremos con funciones cuadrado integrables.
+
+Sea $\lbrace\varphi _{i}(x)\rbrace$ una base ortonormal \footnote{Se denominan vectores ortonormales a aquellos vectores que cumplen la condición $\langle\varphi _{i} \vert \varphi _{j} \rangle=\delta_{ij}$, siendo $\delta_{ij}$ la delta de Kronecker.} podemos aproximar una función f(x) por una suma en serie de la siguiente forma:
+
+\begin{equation}
+f(x)=\sum_{i=0}^{\infty}a_{i}\varphi _{i}(x)
+\end{equation}
+Donde los coeficientes cumplen:
+
+\begin{equation}
+a_{i} =\langle f \vert \varphi _{i} \rangle 
+\end{equation}
+\begin{figure*}[!t]
+\centering
+    \includegraphics[width=12cm]{comparativa}
+    \captionof{figure}{Comparativa corrección criterio AICc}
+     \label{fig:cc}
+\end{figure*}
+%----------------------------------------------------------------------------------------%
+\subsection{Estimación de la función densidad}
+%----------------------------------------------------------------------------------------%
+Podemos tratar de determinar una aproximación a la función densidad utilizando los desarrollos en serie del apartado anterior.
+No conocemos la función $f(x)$ con lo que no podemos determinar los coeficientes $a_{i}$, sin embargo, si recordamos la definición de $a_{i}$:
+
+\begin{equation}
+a_{i}=\int_{\Omega} f(x)\varphi _{i}(x) dx=E[\varphi_{i}]
+\end{equation}
+
+Por lo que nuestro problema se resume en la determinación de un estimador de la esperanza de $\varphi_{i}(x)$.
+\begin{equation}
+\widehat{a}_{i}=\frac{1}{n}\sum_{j=1}^{n}\varphi_{i}(X_{j})
+\end{equation}
+
+y nuestra aproximación de la función densidad es: 
+
+\begin{equation}\label{ecuacion}
+\widehat{f}(x)=\sum_{i=0}^{\infty}\widehat{a}_{i}\varphi_{i}(x)
+\end{equation}
+
+Una versión ligeramente distinta a la planteada sería la siguiente modificación de la relación \ref{ecuacion}:
+\begin{equation}\label{ecuacion1}
+\widehat{f}(x)=\sum_{i=0}^{\infty}b_{i}\widehat{a}_{i}\varphi_{i}(x)
+\end{equation}
+
+Donde los $b_{i}$ son parámetros de suavizado que determinamos minimizando el error cuadrático medio [\cite{Simonoff:1996}]. En nuestro estudio realizaremos ambas aproximaciones y compararemos resultados.
+
+Trabajaremos con una pequeña modificación de los polinomios de Hermite:
+
+\begin{equation}
+\varphi_{m}=\frac{H_{m}*e^{-x^2/2}}{\sqrt{\sqrt{\pi}2^{m}m!}}
+\end{equation}
+
+Que son ortonormales y están definidos en $(-\infty,\infty)$.
+
+\begin{figure*}[!t]
+   \centering
+    \includegraphics[width=11cm]{curtosis}
+    \captionof{figure}{Comparativa entre los dos métodos}
+     \label{fig:cc2}
+\end{figure*}
+\section{Trabajo}
+
+Nuestro objetivo es determinar un buen estimador de la función densidad. En los desarrollos en serie clásicos cuanto mayor es el orden del desarrollo, mejor es la aproximación. Esto no se cumple en la aproximación de la función densidad, puesto que tenemos un número pequeño de datos en vez de funciones. El desarrollo tiende a interpolar más que a aproximar cuando aumentamos el orden. Es por este motivo, que no podemos dejar que el desarrollo alcance órdenes muy grandes. En este estudio siempre se trabajará con órdenes en el desarrollo menores al número de datos.
+
+La cuestión ahora es determinar cual es el orden adecuado en el desarrollo para realizar la mejor aproximación. Para ello utilizaremos la función de verosimilitud calculada con el estimador de la función de densidad. Calcularemos la función de verosimilitud para todos los desarrollos desde el orden $0$ hasta $N-1$, siendo $N$ el número de datos, eligiendo aquella que sea máxima. Sin embargo, este método, tiene un par de inconvenientes. El primer inconveniente como ya se mencionó, es que órdenes mayores en el desarrollo tienden a interpolar, lo cual producirá valores mayores de la función de verosimilitud a pesar de que estas estimaciones no sean las más adecuadas para el modelo. El otro inconveniente es que mayor orden implica mayor rizado en la estimación, y nos interesa que el estimador sea suave. Esto último ocurre a pesar de utilizar los parámetros $b_{i}$. Para solucionar este problema utilizaremos la misma idea en la que se basan los criterios de información para la regresión. Utilizaremos una versión modificada del criterio corregido de Akaike:
+
+\begin{equation}
+AICc(k)=-2ln(\mathcal{L})+2k+\frac{2k^2+2k}{N-k-1}
+\end{equation}
+
+Donde $\mathcal{L}$ es la función de verosimilitud y $k$ el orden en el desarrollo. Nos quedaremos con la aproximación que de un valor más bajo al criterio de Akaike.
+
+
+En la figura \ref{fig:cc} tenemos la aproximación del modelo 2 de Marron y Wand, donde a la izquierda tenemos el modelo sin parámetro $b_{i}$ y a la derecha teniéndolo en cuenta. La traza verde es nuestra estimación, la roja es estimación tipo núcleo y la negra el valor real. Como podemos apreciar no existe una gran diferencia entre utilizar los parámetros de suavizado o no, es por ello que de ahora en adelante trabajaremos con el modelo sin $b_{i}$, por simplicidad y tiempo de computación.
+\begin{figure*}[!t]
+\centering
+    \includegraphics[width=10cm]{modas}
+    \captionof{figure}{Comparativa corrección criterio AICc}
+     \label{fig:cc1}
+\end{figure*}
+
+\subsection{Modificación AICc para formas }
+
+En ciertas situaciones el criterio de Akaike puede penalizar más de lo deseado. Este hecho se aprecia cuando tenemos que realizar aproximaciones de figuras con mucha curtosis o con varias modas. La penalización no es excesiva, pero si lo suficiente como para plantearnos realizar una pequeña modificación al criterio. De este modo, surgió la idea de utilizar un nuevo criterio que tuviera en cuenta propiedades de forma.
+
+Cuando tenemos una función densidad con mucha curtosis, valores altos en el desarrollo generan aproximaciones muy buenas en la zona del máximo, sin embargo mucho rizado en la zona de las colas. El criterio de Akaike tiende a sobresuavizar la estimación y los órdenes altos producen demasiado rizado, por este motivo realizamos la siguiente modificación al $AICc$:     
+
+\begin{equation}
+AICc(k)=-2ln(\mathcal{L})+2k+\frac{2k^2+2k}{N-k-1}-k*c
+\end{equation}
+
+Donde c es la curtosis estimada con el comando kurtosis del paquete e1071 de R [\citep{e1071:2018}].
+
+En la figura \ref{fig:cc1} se comparan los modelos determinados sin la corrección(modelo de la izquierda) y con la corrección(modelo de la derecha).
+
+Para distribuciones que tienen más de una moda el problema es equivalente. El criterio de AICc tiende priorizar modelos con una única moda y curtosis muy baja. Utilizamos un criterio equivalente al del caso de curtosis altas:
+
+\begin{equation}
+AICc(k)=-2ln(\mathcal{L})+2k+\frac{2k^2+2k}{N-k-1}-k*m
+\end{equation}
+
+Donde m es el número de modas estimadas con el comando nmodes [\cite{multimode:2018}] del paquete multimode de R.
+
+%----------------------------------------------------------------------------------------%
+
+
+\section{Conclusiones}
+
+Las conclusiones que obtenemos de la estimación por series ortonorales sobre los modelos de Marron y Wand es que se consiguen buenos resultados en la búsqueda de la función de densidad. La estimación propuesta consigue ajustarse correctamente a los datos, los cuales presentan diversas situaciones difíciles de modelizar. 
+
+De hecho, en este tipo de situaciones, las más abruptas, la estimación por series ortonormales parece ajustarse mejor a la curva real que la estimación tipo núcleo, sin ser este suceso algo que podamos establecer de modo genérico.
+
+Por otra parte, este tipo de desarrollos requieren de gran tiempo de computación para obtener los diversos grados de los polinomios de hermite. Por lo que, a la hora de obtener la estimación, la diferencia de tiempo de computo entre los dos métodos comparados, tipo núcleo o series ortonormales, resulta muy a favor del primero.
+
+Añadir que, este tipo de estimación tiende a generar un exceso de rizado en las colas, lo cual no resulta de interés a la hora de estudiar estimaciones de la función de densidad. Esta situación se podría mejorar si se desarrollase la idea de los parámetros de suavizado, cuyo estudio ha sido omitido en este trabajo.
+%----------------------------------------------------------------------------------------%
+
+%----------------------------------------------------------------------------------------%
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------%
+\begin{thebibliography}{99} % Bibliography 
+
+%Example: article
+
+%Example: book
+
+\bibitem[Simonoff, 1996]{Simonoff:1996}
+ Simonoff, J.S. (1996). \newblock{\em Smoothing Methods in Statistics}. \newblock Springer.
+ 
+ \bibitem[e1071, 2018]{e1071:2018}
+ Meyer, D., Dimitriadou, E., Hornik, K., Weingessel, A., Leisch, F., Chang, C., Lin, C.  \newblock{\em Misc Functions of the Department of Statistics, Probability Theory Group}. \newblock {TU Wien.}
+
+\bibitem[Multimode, 2018]{multimode:2018}
+Ameijeiras Alonso, J., Crujeiras, R.M. and Rodríguez Casal, A. \newblock Multimode: An R Package for Mode Assessment. \newblock {\em arXiv preprint: 1803.00472.}
+
+
+
+\end{thebibliography}
+
+%----------------------------------------------------------------------------------------
+\end{multicols}
+\end{document}

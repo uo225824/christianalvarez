@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Christian Álvarez Peláez" />
+
+
+<title>DFE by orthonormal series</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Christian´s Site</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Journal.html">Aplication of functional data to MNIST</a>
+</li>
+<li>
+  <a href="fts.html">FTS for dollar/euro</a>
+</li>
+<li>
+  <a href="orto.html">DFE by orthonormal series</a>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">DFE by orthonormal series</h1>
+<h4 class="author"><em>Christian Álvarez Peláez</em></h4>
+<h4 class="date"><em>8 de octubre de 2020</em></h4>
+
+</div>
+
+
+<div id="estimation-of-the-density-function-by-orthonormal-series" class="section level1">
+<h1>Estimation of the density function by orthonormal series</h1>
+<p>The code and aplication to the Marron and Wand models could be found in <a href="https://github.com/uo225824/DFE">code</a> and <a href="https://github.com/uo225824/DFE/blob/main/12345final.pdf">images</a>.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The idea of the following work will be to propose an alternative formulation to the estimation by core type of the density function. For this we introduce the developments by orthonormal series.</p>
+<p>Throughout the work we study the search for the best estimator of the density function through orthonormal developments. For this, we will use, mainly, two concepts: the likelihood function and the penalty criteria. The objective of the first will be to obtain the best possible estimator, while the penalty criteria will serve to take into account questions of form such as kurtosis or the number of modes of the curve.</p>
+<div id="orthonormal-series" class="section level3">
+<h3>Orthonormal series</h3>
+<p>Let <span class="math inline">\(f(x)\)</span> be a function defined in Hilbert space <span class="math inline">\(\Omega\)</span> with inner product defined as:</p>
+<p><span class="math display">\[
+\langle f \vert g \rangle = \int _ {\Omega} f (x) g (x) dx
+\]</span></p>
+<p>and norm:</p>
+<p><span class="math display">\[
+\Vert x \Vert = \sqrt {\langle x \vert x \rangle}
+\]</span> The function <span class="math inline">\(f(x)\)</span> is said to be square integrable in the space <span class="math inline">\(\Omega\)</span> if it meets the condition:</p>
+<p><span class="math display">\[
+\langle f \vert f \rangle = \int _ {\Omega} f (x) ^ * f (x) dx = \int _ {\Omega} \vert f (x) \vert ^ 2 dx &lt;\infty
+\]</span></p>
+<p>From now on we will work with integrable square functions.</p>
+<p>Let <span class="math inline">\(\lbrace \varphi_{i}(x) \rbrace\)</span> be an orthonormal basis  We can approximate a function f (x) by a serial sum in the following way:</p>
+<p><span class="math display">\[
+f (x) = \sum_ {i = 0} ^ {\infty} a_ {i} \varphi_ {i} (x)
+\]</span> Where the coefficients fulfill:</p>
+<p><span class="math display">\[
+a_ {i} = \langle f \vert \varphi_ {i} \rangle
+\]</span></p>
+</div>
+</div>
+<div id="estimation-of-the-density-function" class="section level2">
+<h2>Estimation of the density function</h2>
+<p>We can try to determine an approximation to the density function using the series expansion of the previous section. We do not know the function <span class="math inline">\(f(x)\)</span> with which we cannot determine the coefficients <span class="math inline">\(a_{i}\)</span>, however, if we remember the definition of <span class="math inline">\(a_{i}\)</span>:</p>
+<p><span class="math display">\[
+a_ {i} = \int_ {\Omega} f (x) \varphi_ {i} (x) dx = E [\varphi_ {i}]
+\]</span></p>
+<p>So our problem is summarized in the determination of an estimator of the expectation of <span class="math inline">\(\varphi_{i}(x)\)</span>. <span class="math display">\[
+\widehat {a}_{i} = \frac {1} {n} \sum_{j = 1} ^ {n} \varphi_ {i} (X_ {j})
+\]</span></p>
+<p>and our approximation of the density function is:</p>
+<p><span class="math display">\[ \label {equation}
+\widehat {f} (x) = \sum_ {i = 0} ^ {\infty} \widehat {a} _ {i} \varphi_ {i} (x)
+\]</span></p>
+<p>A slightly different version to the one proposed would be the following modification of the relation : <span class="math display">\[ \label {equation1}
+\widehat {f} (x) = \sum_ {i = 0} ^ {\infty} b_ {i} \widehat {a} _ {i} \varphi_ {i} (x)
+\]</span></p>
+<p>Where the <span class="math inline">\(b_{i}\)</span> are smoothing parameters that we determine by minimizing the mean square error [Simonoff]. In our study we will carry out both approaches and compare results.</p>
+<p>We will work with a small modification of the Hermite polynomials:</p>
+<p><span class="math display">\[
+\varphi_ {m} = \frac {H_ {m} * e ^ {- x ^ 2/2}} {\sqrt {\sqrt {\pi} 2 ^ {m} m!}}
+\]</span></p>
+<p>Which are orthonormal and are defined in <span class="math inline">\((- \infty, \infty)\)</span>.</p>
+<p>Our goal is to determine a good estimator of the density function. In classical series runs, the higher the order of development, the better the approximation. This is not true in the approximation of the density function, since we have a small number of data instead of functions. Development tends to interpolate rather than approximate when we increase the order. It is for this reason that we cannot let the development reach very large orders. In this study, we will always work with orders in development smaller than the number of data.</p>
+<p>The question now is to determine which is the proper order in the development to make the best approximation. For this we will use the likelihood function calculated with the estimator of the density function. We will calculate the likelihood function for all developments from the order <span class="math inline">\(0\)</span> to <span class="math inline">\(N-1\)</span>, where <span class="math inline">\(N\)</span> is the number of data, choosing the one that is maximum. However, this method has a couple of drawbacks. The first drawback, as already mentioned, is that higher orders in development tend to interpolate, which will produce higher values of the likelihood function even though these estimates are not the most appropriate for the model. The other drawback is that higher order implies greater ripple in the estimation, and we are interested in making the estimator smooth. The latter occurs despite using the <span class="math inline">\(b_ {i}\)</span> parameters. To solve this problem we will use the same idea on which the information criteria for the regression are based. We will use a modified version of Akaike’s corrected criteria:</p>
+<p><span class="math display">\[
+AICc (k) = - 2ln (\mathcal {L}) + 2k + \frac {2k ^ 2 + 2k} {N-k-1}
+\]</span></p>
+<p>Where <span class="math inline">\(\mathcal {L}\)</span> is the likelihood function and <span class="math inline">\(k\)</span> the order in the expansion. We will stick with the approximation that gives a lower value to Akaike’s criteria.</p>
+<div class="figure">
+<img src="images/comparativa.png" />
+
+</div>
+<p>In the figure  we have the approximation of model 2 by Marron and Wand, where on the left we have the model without parameter <span class="math inline">\(b_{i}\)</span> and on the right taking it into account. The green trace is our estimate, the red trace is the core estimate, and the black trace is the actual value. As we can see there is not a big difference between using the smoothing parameters or not, that is why from now on we will work with the model without <span class="math inline">\(b_{i}\)</span>, for simplicity and computation time.</p>
+<p>In certain situations Akaike’s criteria may penalize more than desired. This fact is appreciated when we have to make approximations of figures with a lot of kurtosis or with various fashions. The penalty is not excessive, but it is enough to consider making a small modification to the criteria. In this way, the idea of using a new criterion that took into account properties of form arose.</p>
+<p>When we have a density function with a lot of kurtosis, high values in the development generate very good approximations in the zone of the maximum, however, a lot of ripple in the zone of the tails. Akaike’s criterion tends to over-smooth the estimate and high orders produce too much curl, for this reason we make the following modification to <span class="math inline">\(AICc\)</span>:</p>
+<p><span class="math display">\[
+AICc (k) = - 2ln (\mathcal {L}) + 2k + \frac {2k ^ 2 + 2k} {N-k-1} -k * c
+\]</span></p>
+<p>Where c is the kurtosis estimated with the kurtosis command from the R package e1071.</p>
+<div class="figure">
+<img src="images/curtosis.png" />
+
+</div>
+<p>In the figure  the determined models are compared without the correction (left model) and with the correction (right model).</p>
+<p>For distributions that have more than one mode the problem is equivalent. The AICc criterion tends to prioritize models with a single mode and very low kurtosis. We use a criterion equivalent to that in the case of high kurtosis:</p>
+<p><span class="math display">\[
+AICc (k) = - 2ln (\mathcal {L}) + 2k + \frac {2k ^ 2 + 2k} {N-k-1} -k * m
+\]</span></p>
+<p>Where m is the number of modes estimated with the command nmodes of R’s multimode package.</p>
+<div class="figure">
+<img src="images/modas.png" />
+
+</div>
+</div>
+<div id="conclusions" class="section level2">
+<h2>Conclusions</h2>
+<p>The conclusions that we obtain from the estimation by orthonoral series on the Marron and Wand models is that good results are obtained in the search for the density function. The proposed estimate manages to correctly fit the data, which present various situations difficult to model.</p>
+<p>In fact, in these types of situations, the most abrupt, the estimation by orthonormal series seems to adjust better to the real curve than the core-type estimation, without this event being something that we can establish in a generic way.</p>
+<p>On the other hand, this type of development requires a great deal of computing time to obtain the various degrees of the hermite polynomials. Therefore, when obtaining the estimate, the difference in computation time between the two compared methods, core type or orthonormal series, is very much in favor of the first.</p>
+<p>Add that, this type of estimation tends to generate excess ripple in the tails, which is not of interest when studying estimates of the density function. This situation could be improved if the idea of smoothing parameters, whose study has been omitted in this work, were developed.</p>
+</div>
+<div id="bibliography" class="section level2">
+<h2>Bibliography</h2>
+<p> Simonoff, J.S. (1996). . Springer.</p>
+<p> Meyer, D., Dimitriadou, E., Hornik, K., Weingessel, A., Leisch, F., Chang, C., Lin, C. . </p>
+<p> Ameijeiras Alonso, J., Crujeiras, R.M. and Rodríguez Casal, A. Multimode: An R Package for Mode Assessment. </p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
