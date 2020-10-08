@@ -2,7 +2,14 @@
 title: "DFE by orthonormal series"
 author: "Christian Álvarez Peláez"
 date: "8 de octubre de 2020"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 1
+    #code_folding: hide
 ---
 
 #Estimation of the density function by orthonormal series
