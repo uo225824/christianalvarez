@@ -14,7 +14,7 @@ output:
 
 #Estimation of the density function by orthonormal series
 
-The code and aplication to the Marron and Wand models could be found in [code](https://github.com/uo225824/DFE) and [images](https://github.com/uo225824/DFE/blob/main/12345final.pdf).
+The code and aplication to the Marron and Wand models can be found in [code](https://github.com/uo225824/DFE) and [images](https://github.com/uo225824/DFE/blob/main/12345final.pdf).
 
 ##Introduction
 
