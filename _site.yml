@@ -10,6 +10,8 @@ navbar:
       href: fts.html
     - text: "DFE by orthonormal series"
       href: orto.html
+    - text: "Titanic"
+      href: ti.html
     - text: "Links"
       href: Links.html
 output_dir: "docs"
